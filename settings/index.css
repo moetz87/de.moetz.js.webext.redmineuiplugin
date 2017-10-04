@@ -1,0 +1,160 @@
+/******************************
+*** GENERAL
+******************************/
+
+textarea, input, button, select { 
+    font-family: inherit; 
+    font-size: inherit; 
+}
+
+html {
+    font-size: 12pt;
+    padding: 5px;
+    min-width: 750px;
+}
+
+html,body {
+    background-color: #F9F9FA;
+}
+
+.content {
+    width: 100%;
+    padding: 15px;
+    display: inline-block;
+    border: 1px solid lightgrey;
+    border-radius: 5px;
+}
+
+#header {
+    font-size: 16pt;
+    /*
+    border-bottom: 1px solid lightgrey;
+    */
+    padding-bottom: 5px;
+    margin-bottom: 20px;
+}
+
+#header > button {
+    float: right;
+    height: 28px;
+    font-size: 11pt;
+}
+
+textarea {
+    resize: vertical;
+    height: 75px;
+    vertical-align: top;
+}
+
+button {
+    border: 1px solid lightgray;
+    background-color: white;
+    height: 30px;
+    width: 125px;
+    text-align: center;
+    background-color: transparent;
+    border-radius: 4px;
+}
+
+button:hover {
+    border: 1px solid #BFBFBF;
+    background-color: #DEDEDE;
+}
+
+input, textarea {
+    width: 100%;
+    font-size: 11pt;
+    font-style: monospace;
+}
+
+input {
+    border: 1px solid lightgray;
+    height: 30px;
+    padding: 0 8px 0 8px;
+}
+
+textarea {
+    height: 50px;
+    padding: 4px 8px 4px 8px;
+}
+
+.label {
+    display: inline-block;
+    width: 150px;
+    text-align: right;
+    margin-bottom: 15px;
+    margin-right: 10px;
+}
+
+.value {
+    display: inline-block;
+    width: calc(100% - 150px - 10px);
+}
+
+
+
+/******************************
+*** MESSAGER
+******************************/
+
+#messager {
+    display: none;
+    position: absolute;
+    height: 50px;
+    line-height: 50px;  
+    width: 500px;
+    left: 50%;
+    margin-left: -250px;
+    text-align: center;
+    background-color: white;
+    border: 2px solid lightgrey;
+    border-radius: 5px;
+    font-size: 12pt;
+    text-align: center;
+    vertical-align: middle;
+}
+
+
+
+/******************************
+*** GENERAL SETTINGS
+******************************/
+
+
+
+
+/******************************
+*** RULES
+******************************/
+
+#rules {
+    margin-top: 30px;
+}
+
+#rules .ruleheader>p {
+    display: inline-block;
+    font-weight: 600;
+}
+
+#rules #delbtn {
+    height: 100%;
+    width: 75px;
+    margin-left: 20px;
+    margin-right: 10px;
+}
+
+#rules #upbtn, #rules #downbtn {
+    height: 100%;
+    width: 30px;
+    margin-left: 2px;
+}
+
+#rules #rulebuttons {
+    padding-top: 10px;
+}
+
+#rules div#rulebuttons>button {
+    float: right;
+    margin-bottom: 20px;
+    margin-left: 10px;
+}

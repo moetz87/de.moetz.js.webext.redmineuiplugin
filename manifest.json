@@ -1,0 +1,23 @@
+{
+    "manifest_version": 2,
+    "name": "Redmine UI Plugin",
+    "version": "1.0.0",
+    "description": "A Plugin to manage n-designs Redmine.",
+    "author": "Marco Oetz",
+    "applications": {
+        "gecko": {
+            "id": "redmineuiplugin@marcooetz.de"
+        }
+    },
+    "content_scripts": [{
+        "matches": ["<all_urls>"],
+        "js": ["ui-modifier/index.js"]
+    }],
+    "icons": {
+        "48": "icons/MOE2.png"
+    },
+    "options_ui": {
+        "page": "settings/index.html"
+    },
+    "permissions": ["storage", "tabs", "activeTab"]
+}

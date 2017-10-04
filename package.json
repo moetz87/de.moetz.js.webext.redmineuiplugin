@@ -1,0 +1,18 @@
+{
+    "scripts": {
+        "build": "tsc && webpack --config webpack.config.js",
+        "start": "concurrently \"tsc -w\" \"web-ext run --firefox=firefox-developer\" \"webpack --config webpack.config.js --watch\""
+    },
+    "dependencies": {
+        "jquery": "^3.2.1",
+        "typescript": "^2.5.3",
+        "uuid": "^3.1.0"
+    },
+    "devDependencies": {
+        "@types/jquery": "^3.2.12",
+        "@types/uuid": "^3.4.2",
+        "concurrently": "^3.5.0",
+        "web-ext": "^2.0.0",
+        "webpack": "^3.6.0"
+    }
+}
