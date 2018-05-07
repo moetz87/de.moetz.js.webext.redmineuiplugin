@@ -1,18 +1,31 @@
 {
+    "name": "de.moetz.js.webext.redmineuiplugin",
+    "version": "1.0.0",
     "scripts": {
-        "build": "tsc && webpack --config webpack.config.js",
-        "start": "concurrently \"tsc -w\" \"web-ext run --firefox=firefox-developer\" \"webpack --config webpack.config.js --watch\""
+        "build": "npm install && npm run webpack && npm run mkdir -- build/dist/ && npm run zip",
+        "start": "npm run build && concurrently \"npm run webext\" \"npm run webpack -- --watch\"",
+        "webpack": "webpack --config webpack.config.js",
+        "webext": "web-ext run --firefox=firefox",
+        "zip": "bestzip build/dist/$npm_package_name-$npm_package_version.zip $npm_package_zipFiles",
+        "mkdir": "mkdirp"
     },
+    "zipFiles": "manifest.json icons/ settings/ ui-modifier/",
     "dependencies": {
-        "jquery": "^3.2.1",
-        "typescript": "^2.5.3",
-        "uuid": "^3.1.0"
+        "jquery": "3.3.1",
+        "uuid": "3.1.0"
     },
     "devDependencies": {
-        "@types/jquery": "^3.2.12",
-        "@types/uuid": "^3.4.2",
-        "concurrently": "^3.5.0",
-        "web-ext": "^2.0.0",
-        "webpack": "^3.6.0"
+        "@types/jquery": "3.3.1",
+        "bestzip": "1.1.4",
+        "concurrently": "3.5.0",
+        "mkdirp": "0.5.1",
+        "node": "9.2.0",
+        "npm": "5.6.0",
+        "tslint": "5.8.0",
+        "tslint-microsoft-contrib": "5.0.1",
+        "ts-loader": "3.3.1",
+        "typescript": "2.6.1",
+        "web-ext": "2.2.2",
+        "webpack": "3.8.1"
     }
 }
