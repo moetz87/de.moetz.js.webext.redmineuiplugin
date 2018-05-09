@@ -1,25 +1,30 @@
-import { Rules } from "../settings/rules";
-import { URL } from "../settings/url";
-import * as jquery from "jquery";
+import * as jquery from 'jquery';
+import { AbstractMain } from '../shared/abstract-main';
+import { SettingsLoader } from '../shared/utils/settings-loader';
+import { UrlUtils } from '../shared/utils/url-utils';
 
 
-export class Main {
+export class Main extends AbstractMain {
 
-    static main() {
-        let url = new URL();
-        url.load().then(() => {
-            let regex = new RegExp(url.urlPattern, 'g');
-            let currentUrl = window.location.href;
-            if (regex.test(currentUrl)) {
-                console.log('matches');
-                let rules = new Rules();
-                rules.load().then(() => rules.rules.forEach(rule => jquery(rule.selector).css(JSON.parse(rule.css))));
-            } else {
-                console.log('matches not');
-            }
-        });
+    constructor(
+        private readonly urlUtils: UrlUtils,
+        private readonly settingsLoader: SettingsLoader) {
+        super();
+    }
+
+    public async onExecuteMain() {
+        const settings = await this.settingsLoader.load();
+        if (!this.urlUtils.currentUrlMatchesRegex(settings.url)) {
+            console.log(`URL ${this.urlUtils.getCurrentUrl()} not matching pattern ${settings.url}.`);
+            return;
+        }
+        console.log(`URL ${this.urlUtils.getCurrentUrl()} matching pattern ${settings.url}.`);
+        settings.rules.forEach(rule => jquery(rule.selector).css(rule.css));
     }
 
 }
 
-Main.main();
+new Main(
+    new UrlUtils(),
+    new SettingsLoader()
+).main();

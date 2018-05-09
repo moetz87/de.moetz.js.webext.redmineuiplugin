@@ -60,11 +60,57 @@
 /******/ 	__webpack_require__.p = "";
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 5);
+/******/ 	return __webpack_require__(__webpack_require__.s = 3);
 /******/ })
 /************************************************************************/
 /******/ ([
 /* 0 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const rule_1 = __webpack_require__(1);
+const UUIDv4 = __webpack_require__(9);
+class Settings {
+    constructor(url = 'http://localhost:80', rules = DEFAULTRULES) {
+        this.url = url;
+        this.rules = rules;
+    }
+    static fromJson(json) {
+        return Object.assign(new Settings(), json);
+    }
+}
+exports.Settings = Settings;
+const DEFAULTRULES = [
+    new rule_1.Rule(UUIDv4(), 'Grüne Färbung für Tickets mit Status "In Bearbeitung"', 'td.status:contains("In Bearbeitung")', { 'color': '#278753' }),
+    new rule_1.Rule(UUIDv4(), 'Rote Färbung und Fettdruck für Tickets mit Status "Gelöst"', 'td.status:contains("Gelöst")', { 'font-weight': 'bold', 'color': '#f44242' }),
+    new rule_1.Rule(UUIDv4(), 'Ausgrauen von Tickets mit Status "Erledigt"', 'tr:has(td.status:contains("Erledigt"))', { 'opacity': '0.5' }),
+    new rule_1.Rule(UUIDv4(), 'Hervorheben des Tickets, das ich in Bearbeitung habe', 'tr:has(td.status:contains("In Bearbeitung")):has(td.assigned_to:contains("Marco Oetz"))', { 'background-color': '#d3e0ed' }),
+    new rule_1.Rule(UUIDv4(), 'Ausgrauen von Kommentaren, die lediglich Statusänderungen vorgenommen haben', 'div[id^="change-"]:not(".has-notes")', { 'opacity': '0.25' })
+];
+
+
+/***/ }),
+/* 1 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class Rule {
+    constructor(id, note, selector, css) {
+        this.id = id;
+        this.note = note;
+        this.selector = selector;
+        this.css = css;
+    }
+}
+exports.Rule = Rule;
+
+
+/***/ }),
+/* 2 */
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_ARRAY__, __WEBPACK_AMD_DEFINE_RESULT__;/*!
@@ -10435,77 +10481,309 @@ return jQuery;
 
 
 /***/ }),
-/* 1 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const messager_1 = __webpack_require__(2);
-class Setting {
-    load() {
-        let data = (chrome != null) ? this.loadChrome(this.name) : this.loadFirefox(this.name);
-        return data
-            .then((json) => (json[this.name] != null) ? this.fromJson(json[this.name]) : this.createDefault())
-            .catch((error) => messager_1.Messager.error('error while loading data from storage: ' + JSON.stringify(error)));
-    }
-    save() {
-        let result = (chrome != null) ? this.saveChrome(this.name, this.toJson()) : this.saveFirefox(this.name, this.toJson());
-        return result
-            .then(() => messager_1.Messager.success('successfully saved'))
-            .catch((error) => messager_1.Messager.error('error while saving data to storage: ' + JSON.stringify(error)));
-    }
-    loadFirefox(name) {
-        return browser.storage.local.get(name);
-    }
-    loadChrome(name) {
-        return new Promise(resolve => chrome.storage.local.get(name, (json) => resolve(json)));
-    }
-    saveFirefox(name, value) {
-        return browser.storage.local.set({ [name]: value });
-    }
-    saveChrome(name, value) {
-        return new Promise(resolve => chrome.storage.local.set({ [name]: value }, () => resolve()));
-    }
-}
-exports.Setting = Setting;
-
-
-/***/ }),
-/* 2 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const jquery = __webpack_require__(0);
-const ANIMATION = 150;
-const DURATION = 1500;
-const SUCCESS = 'rgba(154, 239, 155, 0.2)';
-const ERROR = 'rgba(230, 76, 76, 0.2)';
-class Messager {
-    static success(message, duration) {
-        Messager.showMessage(message, SUCCESS, duration);
-    }
-    static error(message, duration) {
-        Messager.showMessage(message, ERROR, duration);
-    }
-    static showMessage(message, color, duration) {
-        this.messager.css({
-            'background-color': color
-        });
-        duration = (duration == undefined) ? DURATION : duration;
-        this.messager.text(message);
-        this.messager.show(ANIMATION);
-        window.setTimeout(() => this.messager.hide(ANIMATION), duration);
-    }
-}
-Messager.messager = jquery('#messager');
-exports.Messager = Messager;
-
-
-/***/ }),
 /* 3 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const user_interface_1 = __webpack_require__(4);
+const abstract_main_1 = __webpack_require__(5);
+const settings_loader_1 = __webpack_require__(6);
+const rule_element_creator_1 = __webpack_require__(7);
+class Main extends abstract_main_1.AbstractMain {
+    constructor(ui, settingsLoader) {
+        super();
+        this.ui = ui;
+        this.settingsLoader = settingsLoader;
+    }
+    onExecuteMain() {
+        this.ui.registerOnChangeListener(() => this.saveSettingsFromUI());
+        this.ui.registerOnRuleDeleteHandler(id => this.deleteRule(id));
+        this.ui.registerOnRuleMoveUpHandler(id => this.moveRuleUp(id));
+        this.ui.registerOnRuleMoveDownHandler(id => this.moveRuleDown(id));
+        this.settingsLoader.load().then(this.ui.setSettings);
+    }
+    saveSettingsFromUI() {
+        this.saveSettings(this.ui.getSettings());
+    }
+    saveSettings(settings) {
+        this.settingsLoader.save(settings)
+            .then(() => this.ui.showMessage('Einstellungen erfolgreich gespeichert.'))
+            .catch(error => this.ui.showErrorMessage(`Fehler beim Speichern von Einstellungen: ${error}.`));
+    }
+    async deleteRule(id) {
+        const settings = await this.settingsLoader.load();
+        settings.rules = settings.rules.filter(rule => rule.id !== id);
+        this.saveSettings(settings);
+        this.ui.setSettings(settings);
+    }
+    async moveRuleUp(id) {
+        const settings = await this.settingsLoader.load();
+        const rules = settings.rules;
+        const index = rules.findIndex(rule => rule.id === id);
+        if (rules.length > 1 && index !== 0) {
+            const tmp = rules[index - 1];
+            rules[index - 1] = rules[index];
+            rules[index] = tmp;
+            this.saveSettings(settings);
+            this.ui.setSettings(settings);
+        }
+    }
+    async moveRuleDown(id) {
+        const settings = await this.settingsLoader.load();
+        const rules = settings.rules;
+        const index = rules.findIndex(rule => rule.id === id);
+        if (rules.length > 1 && index !== rules.length - 1) {
+            const tmp = rules[index + 1];
+            rules[index + 1] = rules[index];
+            rules[index] = tmp;
+            this.saveSettings(settings);
+            this.ui.setSettings(settings);
+        }
+    }
+}
+exports.Main = Main;
+new Main(new user_interface_1.UserInterface(new rule_element_creator_1.RuleElementCreator()), new settings_loader_1.SettingsLoader()).main();
+
+
+/***/ }),
+/* 4 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const settings_1 = __webpack_require__(0);
+const rule_1 = __webpack_require__(1);
+const jQuery = __webpack_require__(2);
+class UserInterface {
+    constructor(ruleElementCreator) {
+        this.ruleElementCreator = ruleElementCreator;
+        this.urlField = document.getElementById('urlField');
+        this.rulesAnchor = document.getElementById('rules');
+        this.messager = document.getElementById('messager');
+        this.onChangeListener = [];
+        this.onRuleDeleteHandler = [];
+        this.onRuleMoveUpHandler = [];
+        this.onRuleMoveDownHandler = [];
+        this.setSettings = (settings) => {
+            this.urlField.value = settings.url;
+            this.showRulesOnUI(settings.rules);
+        };
+        this.urlField.onchange = this.rulesAnchor.onchange =
+            () => this.onChangeListener.forEach(callback => callback());
+    }
+    getSettings() {
+        return new settings_1.Settings(this.urlField.value, this.readRulesFromUI());
+    }
+    registerOnChangeListener(callback) {
+        this.onChangeListener.push(callback);
+    }
+    registerOnRuleDeleteHandler(callback) {
+        this.onRuleDeleteHandler.push(callback);
+    }
+    registerOnRuleMoveUpHandler(callback) {
+        this.onRuleMoveUpHandler.push(callback);
+    }
+    registerOnRuleMoveDownHandler(callback) {
+        this.onRuleMoveDownHandler.push(callback);
+    }
+    showMessage(message) {
+        this.messager.innerText = message;
+        this.messager.className = '';
+        this.messager.style.display = 'block';
+        setTimeout(() => this.messager.style.display = 'none', 2500);
+    }
+    showErrorMessage(message) {
+        this.showMessage(message);
+        this.messager.className = 'error';
+    }
+    showRulesOnUI(rules) {
+        jQuery(this.rulesAnchor).empty();
+        rules.forEach(rule => this.rulesAnchor.appendChild(this.ruleElementCreator.createRuleElement(rule, () => this.onRuleMoveUpHandler.forEach(callback => callback(rule.id)), () => this.onRuleMoveDownHandler.forEach(callback => callback(rule.id)), () => this.onRuleDeleteHandler.forEach(callback => callback(rule.id)))));
+    }
+    readRulesFromUI() {
+        const rules = [];
+        jQuery(this.rulesAnchor).find('.ruleId').each((index, element) => {
+            const id = element.id;
+            const note = jQuery(`#${id}-note`).first().val();
+            const selector = jQuery(`#${id}-selector`).first().val();
+            const css = JSON.parse(jQuery(`#${id}-css`).first().val());
+            rules.push(new rule_1.Rule(id, note, selector, css));
+        });
+        return rules;
+    }
+}
+exports.UserInterface = UserInterface;
+
+
+/***/ }),
+/* 5 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const jquery = __webpack_require__(2);
+class AbstractMain {
+    main() {
+        jquery(document).ready(() => this.onExecuteMain());
+    }
+}
+exports.AbstractMain = AbstractMain;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+const settings_1 = __webpack_require__(0);
+class SettingsLoader {
+    load() {
+        return browser.storage.local.get()
+            .then((json) => settings_1.Settings.fromJson(json));
+    }
+    save(settings) {
+        return browser.storage.local.set(settings);
+    }
+}
+exports.SettingsLoader = SettingsLoader;
+
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class RuleElementCreator {
+    createRuleElement(rule, onUpClicked, onDownClicked, onDeleteClicked) {
+        const ruleHeader = document.createElement('div');
+        ruleHeader.appendChild(this.createRuleHeader(rule.id, onUpClicked, onDownClicked, onDeleteClicked));
+        const ruleContent = this.createRuleContent();
+        ruleContent.appendChild(this.createInputWithLabel(`${rule.id}-note`, 'Beschreibung', rule.note));
+        ruleContent.appendChild(this.createInputWithLabel(`${rule.id}-selector`, 'jQuery-Selector', rule.selector));
+        ruleContent.appendChild(this.createTextareaWithLabel(`${rule.id}-css`, 'CSS (als JSON)', JSON.stringify(rule.css)));
+        const ruleElement = document.createElement('div');
+        ruleElement.appendChild(this.createHiddenMarkerField(rule.id));
+        ruleElement.appendChild(ruleHeader);
+        ruleElement.appendChild(ruleContent);
+        return ruleElement;
+    }
+    createRuleHeader(id, onUpClicked, onDownClicked, onDeleteClicked) {
+        const itemLeft = document.createElement('div');
+        itemLeft.innerText = `Regel ${id}`;
+        itemLeft.className = 'flex-item left';
+        const itemRight = document.createElement('div');
+        itemRight.className = 'flex-item right';
+        itemRight.appendChild(this.createClickableIcon('fas fa-arrow-alt-circle-up', onUpClicked));
+        itemRight.appendChild(this.createClickableIcon('fas fa-arrow-alt-circle-down', onDownClicked));
+        itemRight.appendChild(this.createClickableIcon('fas fa-trash-alt', onDeleteClicked));
+        const container = document.createElement('div');
+        container.className = 'ruleheader flex-container';
+        container.appendChild(itemLeft);
+        container.appendChild(itemRight);
+        return container;
+    }
+    createRuleContent() {
+        const div = document.createElement('div');
+        div.className = 'rulecontent';
+        return div;
+    }
+    createLabelElement(forId, text) {
+        const label = document.createElement('label');
+        label.attributes['for'] = forId;
+        label.innerText = text;
+        return label;
+    }
+    createInputElement(id, value) {
+        const input = document.createElement('input');
+        input.id = id;
+        input.type = 'text';
+        input.value = value;
+        return input;
+    }
+    createInputWithLabel(id, text, value) {
+        const div = document.createElement('div');
+        div.appendChild(this.createLabelElement(id, text));
+        div.appendChild(this.createInputElement(id, value));
+        return div;
+    }
+    createTextareaElement(id, value) {
+        const textarea = document.createElement('textarea');
+        textarea.id = id;
+        textarea.value = value;
+        return textarea;
+    }
+    createTextareaWithLabel(id, text, value) {
+        const div = document.createElement('div');
+        div.appendChild(this.createLabelElement(id, text));
+        div.appendChild(this.createTextareaElement(id, value));
+        return div;
+    }
+    createHiddenMarkerField(id) {
+        const div = document.createElement('div');
+        div.id = id;
+        div.className = 'ruleId';
+        div.style.display = 'none';
+        return div;
+    }
+    createClickableIcon(iconClass, onClick) {
+        const i = document.createElement('i');
+        i.className = iconClass;
+        const a = document.createElement('a');
+        a.onclick = () => onClick();
+        a.style.cursor = 'pointer';
+        a.appendChild(i);
+        return a;
+    }
+}
+exports.RuleElementCreator = RuleElementCreator;
+
+
+/***/ }),
+/* 8 */,
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
+var rng = __webpack_require__(10);
+var bytesToUuid = __webpack_require__(12);
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options == 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+
+/***/ }),
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
@@ -10542,322 +10820,10 @@ if (!rng) {
 
 module.exports = rng;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(9)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
 
 /***/ }),
-/* 4 */
-/***/ (function(module, exports) {
-
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-var byteToHex = [];
-for (var i = 0; i < 256; ++i) {
-  byteToHex[i] = (i + 0x100).toString(16).substr(1);
-}
-
-function bytesToUuid(buf, offset) {
-  var i = offset || 0;
-  var bth = byteToHex;
-  return bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]];
-}
-
-module.exports = bytesToUuid;
-
-
-/***/ }),
-/* 5 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const rules_1 = __webpack_require__(6);
-const url_1 = __webpack_require__(11);
-const jquery = __webpack_require__(0);
-class Main {
-    static main() {
-        let rules = new rules_1.Rules('#rulesanchor');
-        rules.load().then(() => rules.render());
-        jquery('#button-addrule').on('click', () => rules.add(rules_1.Rule.createDefault()));
-        jquery('#button-saverules').on('click', () => rules.save());
-        let url = new url_1.URL('#urlanchor');
-        url.load().then(() => url.render());
-        jquery('#button-savesettings').on('click', () => url.save());
-    }
-}
-exports.Main = Main;
-Main.main();
-
-
-/***/ }),
-/* 6 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const setting_1 = __webpack_require__(1);
-const jquery = __webpack_require__(0);
-const UUID = __webpack_require__(7);
-const messager_1 = __webpack_require__(2);
-class Rules extends setting_1.Setting {
-    constructor(childOfId) {
-        super();
-        this._rules = [];
-        this._childOfId = childOfId;
-    }
-    get name() {
-        return 'rules';
-    }
-    get rules() {
-        return this._rules;
-    }
-    toJson() {
-        return this._rules;
-    }
-    fromJson(json) {
-        this._rules = [];
-        json.forEach((element) => {
-            let rule = Rule.fromJson(element);
-            this.rules.push(rule);
-        });
-    }
-    createDefault() {
-        this._rules = DEFAULTRULES;
-    }
-    render() {
-        jquery(this._childOfId).empty();
-        this.rules.forEach((rule) => {
-            let element = rule.createElement();
-            element.find('#delbtn').on('click', () => this.remove(rule));
-            element.find('#upbtn').on('click', () => this.up(rule));
-            element.find('#downbtn').on('click', () => this.down(rule));
-            element.find('input').on('input', () => rule.selector = String(element.find('input').val()));
-            element.find('textarea').on('input', () => rule.css = String(element.find('textarea').val()));
-            element.appendTo(jquery(this._childOfId));
-        });
-    }
-    add(rule) {
-        this.rules.push(rule);
-        this.render();
-    }
-    remove(rule) {
-        this.rules.splice(this.rules.indexOf(rule), 1);
-        this.render();
-        messager_1.Messager.success('Rule ' + rule.uuid + ' deleted', 1000);
-    }
-    up(rule) {
-        let index = this.rules.indexOf(rule);
-        if (index == 0) {
-            return;
-        }
-        let tmp = this.rules[index - 1];
-        this.rules[index - 1] = rule;
-        this.rules[index] = tmp;
-        this.render();
-    }
-    down(rule) {
-        let index = this.rules.indexOf(rule);
-        if (index == this.rules.length - 1) {
-            return;
-        }
-        let tmp = this.rules[index + 1];
-        this.rules[index + 1] = rule;
-        this.rules[index] = tmp;
-        this.render();
-    }
-}
-exports.Rules = Rules;
-class Rule {
-    constructor(selector, css) {
-        this._uuid = UUID.v4();
-        this._selector = selector;
-        this._css = css;
-    }
-    static fromJson(json) {
-        let rule = Object.create(Rule.prototype);
-        return Object.assign(rule, json);
-    }
-    static createDefault() {
-        return new Rule('', {});
-    }
-    get uuid() {
-        return this._uuid;
-    }
-    get selector() {
-        return this._selector;
-    }
-    set selector(selector) {
-        this._selector = selector;
-    }
-    get css() {
-        return JSON.stringify(this._css);
-    }
-    set css(css) {
-        this._css = JSON.parse(css);
-    }
-    createElement() {
-        var stub = '<div class="rule">';
-        stub = stub + '<div class="ruleheader"><p>Rule ${id}</p><button id="delbtn">Delete</button><button id="upbtn">&uarr;</button><button id="downbtn">&darr;</button></div>';
-        stub = stub + '<div class="label">jQuery-Selector:</div><div class="value"><input type="text"></div>';
-        stub = stub + '<div class="label">CSS (as JSON):</div><div class="value"><textarea type="text"></textarea></div>';
-        stub = stub + '</div>';
-        stub = stub.replace(new RegExp('\\$\\{id\\}', 'g'), this.uuid);
-        var element = jquery(stub);
-        element.find('input').val(this.selector);
-        element.find('textarea').val(this.css);
-        return element;
-    }
-}
-exports.Rule = Rule;
-const DEFAULTRULES = [
-    new Rule('td.status:contains("In Bearbeitung")', {
-        'color': '#278753'
-    }),
-    new Rule('td.status:contains("Gelöst")', {
-        'font-weight': 'bold',
-        'color': '#f44242'
-    }),
-    new Rule('tr:has(td.status:contains("Erledigt"))', {
-        'opacity': '0.5'
-    }),
-    new Rule('tr:has(td.status:contains("In Bearbeitung")):has(td.assigned_to:contains("Marco Oetz"))', {
-        'background-color': '#d3e0ed'
-    })
-];
-
-
-/***/ }),
-/* 7 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var v1 = __webpack_require__(8);
-var v4 = __webpack_require__(10);
-
-var uuid = v4;
-uuid.v1 = v1;
-uuid.v4 = v4;
-
-module.exports = uuid;
-
-
-/***/ }),
-/* 8 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var rng = __webpack_require__(3);
-var bytesToUuid = __webpack_require__(4);
-
-// **`v1()` - Generate time-based UUID**
-//
-// Inspired by https://github.com/LiosK/UUID.js
-// and http://docs.python.org/library/uuid.html
-
-// random #'s we need to init node and clockseq
-var _seedBytes = rng();
-
-// Per 4.5, create and 48-bit node id, (47 random bits + multicast bit = 1)
-var _nodeId = [
-  _seedBytes[0] | 0x01,
-  _seedBytes[1], _seedBytes[2], _seedBytes[3], _seedBytes[4], _seedBytes[5]
-];
-
-// Per 4.2.2, randomize (14 bit) clockseq
-var _clockseq = (_seedBytes[6] << 8 | _seedBytes[7]) & 0x3fff;
-
-// Previous uuid creation time
-var _lastMSecs = 0, _lastNSecs = 0;
-
-// See https://github.com/broofa/node-uuid for API details
-function v1(options, buf, offset) {
-  var i = buf && offset || 0;
-  var b = buf || [];
-
-  options = options || {};
-
-  var clockseq = options.clockseq !== undefined ? options.clockseq : _clockseq;
-
-  // UUID timestamps are 100 nano-second units since the Gregorian epoch,
-  // (1582-10-15 00:00).  JSNumbers aren't precise enough for this, so
-  // time is handled internally as 'msecs' (integer milliseconds) and 'nsecs'
-  // (100-nanoseconds offset from msecs) since unix epoch, 1970-01-01 00:00.
-  var msecs = options.msecs !== undefined ? options.msecs : new Date().getTime();
-
-  // Per 4.2.1.2, use count of uuid's generated during the current clock
-  // cycle to simulate higher resolution clock
-  var nsecs = options.nsecs !== undefined ? options.nsecs : _lastNSecs + 1;
-
-  // Time since last uuid creation (in msecs)
-  var dt = (msecs - _lastMSecs) + (nsecs - _lastNSecs)/10000;
-
-  // Per 4.2.1.2, Bump clockseq on clock regression
-  if (dt < 0 && options.clockseq === undefined) {
-    clockseq = clockseq + 1 & 0x3fff;
-  }
-
-  // Reset nsecs if clock regresses (new clockseq) or we've moved onto a new
-  // time interval
-  if ((dt < 0 || msecs > _lastMSecs) && options.nsecs === undefined) {
-    nsecs = 0;
-  }
-
-  // Per 4.2.1.2 Throw error if too many uuids are requested
-  if (nsecs >= 10000) {
-    throw new Error('uuid.v1(): Can\'t create more than 10M uuids/sec');
-  }
-
-  _lastMSecs = msecs;
-  _lastNSecs = nsecs;
-  _clockseq = clockseq;
-
-  // Per 4.1.4 - Convert from unix epoch to Gregorian epoch
-  msecs += 12219292800000;
-
-  // `time_low`
-  var tl = ((msecs & 0xfffffff) * 10000 + nsecs) % 0x100000000;
-  b[i++] = tl >>> 24 & 0xff;
-  b[i++] = tl >>> 16 & 0xff;
-  b[i++] = tl >>> 8 & 0xff;
-  b[i++] = tl & 0xff;
-
-  // `time_mid`
-  var tmh = (msecs / 0x100000000 * 10000) & 0xfffffff;
-  b[i++] = tmh >>> 8 & 0xff;
-  b[i++] = tmh & 0xff;
-
-  // `time_high_and_version`
-  b[i++] = tmh >>> 24 & 0xf | 0x10; // include version
-  b[i++] = tmh >>> 16 & 0xff;
-
-  // `clock_seq_hi_and_reserved` (Per 4.2.2 - include variant)
-  b[i++] = clockseq >>> 8 | 0x80;
-
-  // `clock_seq_low`
-  b[i++] = clockseq & 0xff;
-
-  // `node`
-  var node = options.node || _nodeId;
-  for (var n = 0; n < 6; ++n) {
-    b[i + n] = node[n];
-  }
-
-  return buf ? buf : bytesToUuid(b);
-}
-
-module.exports = v1;
-
-
-/***/ }),
-/* 9 */
+/* 11 */
 /***/ (function(module, exports) {
 
 var g;
@@ -10884,80 +10850,32 @@ module.exports = g;
 
 
 /***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
+/* 12 */
+/***/ (function(module, exports) {
 
-var rng = __webpack_require__(3);
-var bytesToUuid = __webpack_require__(4);
-
-function v4(options, buf, offset) {
-  var i = buf && offset || 0;
-
-  if (typeof(options) == 'string') {
-    buf = options == 'binary' ? new Array(16) : null;
-    options = null;
-  }
-  options = options || {};
-
-  var rnds = options.random || (options.rng || rng)();
-
-  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-  // Copy bytes to buffer, if provided
-  if (buf) {
-    for (var ii = 0; ii < 16; ++ii) {
-      buf[i + ii] = rnds[ii];
-    }
-  }
-
-  return buf || bytesToUuid(rnds);
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
 }
 
-module.exports = v4;
-
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports, __webpack_require__) {
-
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-const setting_1 = __webpack_require__(1);
-const jquery = __webpack_require__(0);
-const DEFAULTURL = '.*(/redmine/projects/).*';
-class URL extends setting_1.Setting {
-    constructor(appendToId) {
-        super();
-        this._appendToId = appendToId;
-    }
-    get name() {
-        return 'url';
-    }
-    get urlPattern() {
-        return this._urlPattern;
-    }
-    toJson() {
-        return this._urlPattern;
-    }
-    fromJson(json) {
-        this._urlPattern = json;
-    }
-    createDefault() {
-        this._urlPattern = DEFAULTURL;
-    }
-    render() {
-        var stub = '<div class="label">URL-Pattern (RegEx):</div><div class="value"><input type="text"></div>';
-        var element = jquery(stub);
-        element.find('input').val(this._urlPattern);
-        element.find('input').on('input', () => this._urlPattern = String(element.find('input').val()));
-        jquery(this._appendToId).empty();
-        element.appendTo(jquery(this._appendToId));
-    }
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  return bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
 }
-exports.URL = URL;
+
+module.exports = bytesToUuid;
 
 
 /***/ })
