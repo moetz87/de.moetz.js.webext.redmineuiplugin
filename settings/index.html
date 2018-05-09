@@ -5,29 +5,26 @@
 <head>
     <meta charset="utf-8">
     <link rel="stylesheet" href="index.css">
+    <link rel="stylesheet" href="common.css">
+    <link rel="stylesheet" href="fontawesome/fontawesome-all.min.css">
 </head>
 
 <body>
 
     <div id="messager"></div>
 
-    <div id="settings" class="content">
-        <div id="header">
-            General Settings
-            <button id="button-savesettings">Save</button>
+    <div class="titleheader">Allgemeine Einstellungen</div>
+    <div id="generalsettings" class="content">
+        <div class="entry first">
+            <label for="urlField">Redmine-URL (RegEx):</label>
+            <input id="urlField" type="text" style="width: 100%;">
         </div>
-        <div id="urlanchor"></div>
     </div>
 
-    <div id="rules" class="content">
-        <div id="header">
-            Styling Rules
-            <button id="button-saverules">Save</button>
-        </div>
+    <div class="titleheader">Regeln</div>
+    <div id="rules" class="content last">
         <div id="rulesanchor"></div>
-        <div id="rulebuttons">
-            <button id="button-addrule">Add Rule</button>
-        </div>
+        <i id="addRuleBtn" class="fas fa-plus-circle"></i>
     </div>
 
     <script src="index.js"></script>

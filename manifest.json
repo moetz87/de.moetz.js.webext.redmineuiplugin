@@ -2,7 +2,7 @@
     "manifest_version": 2,
     "name": "Redmine UI Plugin",
     "version": "1.0.0",
-    "description": "A Plugin to manage n-designs Redmine.",
+    "description": "Eine Webextension zur Anpassung der Redmine-Oberfläche.",
     "author": "Marco Oetz",
     "applications": {
         "gecko": {
@@ -11,10 +11,10 @@
     },
     "content_scripts": [{
         "matches": ["<all_urls>"],
-        "js": ["ui-modifier/index.js"]
+        "js": ["ui-modifier/main.js"]
     }],
     "icons": {
-        "48": "icons/MOE2.png"
+        "48": "icons/logo.png"
     },
     "options_ui": {
         "page": "settings/index.html"

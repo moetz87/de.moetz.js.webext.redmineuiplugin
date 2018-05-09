@@ -1,160 +1,148 @@
-/******************************
-*** GENERAL
-******************************/
-
-textarea, input, button, select { 
-    font-family: inherit; 
-    font-size: inherit; 
-}
+/**************************/
+/* General */
+/**************************/
 
 html {
-    font-size: 12pt;
-    padding: 5px;
     min-width: 750px;
 }
 
-html,body {
+html,
+body {
+    font-size: 12pt;
     background-color: #F9F9FA;
 }
 
-.content {
-    width: 100%;
-    padding: 15px;
-    display: inline-block;
-    border: 1px solid lightgrey;
-    border-radius: 5px;
-}
-
-#header {
-    font-size: 16pt;
-    /*
-    border-bottom: 1px solid lightgrey;
-    */
-    padding-bottom: 5px;
-    margin-bottom: 20px;
-}
-
-#header > button {
-    float: right;
-    height: 28px;
-    font-size: 11pt;
-}
-
-textarea {
-    resize: vertical;
-    height: 75px;
-    vertical-align: top;
-}
-
-button {
-    border: 1px solid lightgray;
-    background-color: white;
-    height: 30px;
-    width: 125px;
-    text-align: center;
-    background-color: transparent;
-    border-radius: 4px;
-}
-
-button:hover {
-    border: 1px solid #BFBFBF;
-    background-color: #DEDEDE;
-}
-
-input, textarea {
-    width: 100%;
-    font-size: 11pt;
-    font-style: monospace;
-}
-
 input {
-    border: 1px solid lightgray;
     height: 30px;
-    padding: 0 8px 0 8px;
+    background-color: white;
+    border: 1px solid lightgrey;
 }
 
-textarea {
-    height: 50px;
-    padding: 4px 8px 4px 8px;
+.content {
+    width: calc(100% - 2px);
+    border: 1px solid lightgrey;
+    padding: 20px;
+    margin-bottom: 25px;
 }
 
-.label {
-    display: inline-block;
-    width: 150px;
+.content.last {
+    margin-bottom: 2px;
+}
+
+.titleheader {
+    font-weight: bold;
+}
+
+.flex-container {
+    display: flex;
+}
+
+.flex-item {
+    flex-grow: 1;
+}
+
+.flex-item.left {
+    text-align: left;
+}
+
+.flex-item.center {
+    text-align: center;
+}
+
+.flex-item.right {
     text-align: right;
-    margin-bottom: 15px;
-    margin-right: 10px;
 }
 
-.value {
-    display: inline-block;
-    width: calc(100% - 150px - 10px);
+label {
+    font-size: 85%;
+    font-weight: bold;
+}
+
+.fullwidth {
+    width: 100%;
 }
 
 
 
-/******************************
-*** MESSAGER
-******************************/
+/**************************/
+/* Messager */
+/**************************/
 
 #messager {
+    position: fixed;
     display: none;
-    position: absolute;
-    height: 50px;
-    line-height: 50px;  
-    width: 500px;
+    padding: 10px;
     left: 50%;
-    margin-left: -250px;
+    transform: translateX(-50%);
     text-align: center;
-    background-color: white;
-    border: 2px solid lightgrey;
-    border-radius: 5px;
-    font-size: 12pt;
-    text-align: center;
-    vertical-align: middle;
+    background-color: rgb(146, 252, 160);
+    border: 1px solid rgb(90, 175, 100);
+}
+
+#messager.error {
+    background-color: rgba(252, 146, 146);
+    border: 1px solid rgb(192, 63, 95);
 }
 
 
 
-/******************************
-*** GENERAL SETTINGS
-******************************/
+/**************************/
+/* General Settings */
+/**************************/
 
-
-
-
-/******************************
-*** RULES
-******************************/
-
-#rules {
-    margin-top: 30px;
-}
-
-#rules .ruleheader>p {
+#generalsettings .entry {
+    width: 100%;
     display: inline-block;
+    margin-top: 20px;
+}
+
+#generalsettings .entry.first {
+    margin-top: 0px;
+}
+
+#generalsettings .entry .key {
+    padding-bottom: 5px;
+}
+
+#generalsettings .entry .value {
+    width: 100%;
+}
+
+#generalsettings .entry .value input {
+    width: 100%;
+}
+
+
+
+
+/******************************
+*** Rules
+******************************/
+
+#rulesanchor input, #rulesanchor textarea {
+    width: 100%;
+    margin-bottom: 10px;
+}
+
+#rulesanchor .ruleheader {
+    /*display: inline-block;*/
     font-weight: 600;
+    margin-bottom: 10px;
+    border-bottom: 1px solid lightgrey;
 }
 
-#rules #delbtn {
-    height: 100%;
-    width: 75px;
-    margin-left: 20px;
-    margin-right: 10px;
+#rulesanchor .rulecontent {
+    margin: 0px 0px 25px 20px;
 }
 
-#rules #upbtn, #rules #downbtn {
-    height: 100%;
-    width: 30px;
-    margin-left: 2px;
+#rulesanchor .fas {
+    margin-left: 5px;
+    font-size: 115%;
 }
 
-#rules #rulebuttons {
-    padding-top: 10px;
-}
-
-#rules div#rulebuttons>button {
+#rules #addRuleBtn {
+    cursor: pointer;
+    color: green;
+    font-size: 200%;
     float: right;
-    margin-bottom: 20px;
-    margin-left: 10px;
 }
