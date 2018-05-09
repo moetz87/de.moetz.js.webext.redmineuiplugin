@@ -1,5 +1,5 @@
-import { Rule } from './rule';
 import * as UUIDv4 from 'uuid/v4';
+import { Rule } from './rule';
 
 export class Settings {
 
@@ -14,7 +14,6 @@ export class Settings {
     }
 
 }
-
 
 const DEFAULTRULES = [
     new Rule(

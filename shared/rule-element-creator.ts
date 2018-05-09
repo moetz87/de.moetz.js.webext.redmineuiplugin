@@ -1,4 +1,4 @@
-import { Rule } from "./model/rule";
+import { Rule } from './model/rule';
 
 export class RuleElementCreator {
 
@@ -26,8 +26,8 @@ export class RuleElementCreator {
         const itemRight = document.createElement('div');
         itemRight.className = 'flex-item right';
         itemRight.appendChild(this.createClickableIcon('fas fa-arrow-alt-circle-up', onUpClicked));
-        itemRight.appendChild(this.createClickableIcon('fas fa-arrow-alt-circle-down',onDownClicked));
-        itemRight.appendChild(this.createClickableIcon('fas fa-trash-alt', onDeleteClicked));
+        itemRight.appendChild(this.createClickableIcon('fas fa-arrow-alt-circle-down', onDownClicked));
+        itemRight.appendChild(this.createClickableIcon('fas fa-trash-alt red', onDeleteClicked));
 
         const container = document.createElement('div');
         container.className = 'ruleheader flex-container';
@@ -90,7 +90,7 @@ export class RuleElementCreator {
         const i = document.createElement('i');
         i.className = iconClass;
         const a = document.createElement('a');
-        a.onclick = () => onClick();
+        a.onclick = onClick;
         a.style.cursor = 'pointer';
         a.appendChild(i);
         return a;

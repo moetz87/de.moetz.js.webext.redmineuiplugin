@@ -10444,7 +10444,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 const jquery = __webpack_require__(0);
 const abstract_main_1 = __webpack_require__(2);
 const settings_loader_1 = __webpack_require__(3);
-const url_utils_1 = __webpack_require__(6);
+const url_utils_1 = __webpack_require__(10);
 class Main extends abstract_main_1.AbstractMain {
     constructor(urlUtils, settingsLoader) {
         super();
@@ -10508,8 +10508,8 @@ exports.SettingsLoader = SettingsLoader;
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+const UUIDv4 = __webpack_require__(6);
 const rule_1 = __webpack_require__(5);
-const UUIDv4 = __webpack_require__(10);
 class Settings {
     constructor(url = 'http://localhost:80', rules = DEFAULTRULES) {
         this.url = url;
@@ -10536,12 +10536,16 @@ const DEFAULTRULES = [
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+const UUIDv4 = __webpack_require__(6);
 class Rule {
     constructor(id, note, selector, css) {
         this.id = id;
         this.note = note;
         this.selector = selector;
         this.css = css;
+    }
+    static empty() {
+        return new Rule(UUIDv4(), '', '', {});
     }
 }
 exports.Rule = Rule;
@@ -10551,34 +10555,8 @@ exports.Rule = Rule;
 /* 6 */
 /***/ (function(module, exports, __webpack_require__) {
 
-"use strict";
-
-Object.defineProperty(exports, "__esModule", { value: true });
-class UrlUtils {
-    getCurrentUrl() {
-        return window.location.href;
-    }
-    currentUrlMatchesRegex(pattern) {
-        const regex = new RegExp(pattern, 'g');
-        return regex.test(this.getCurrentUrl());
-    }
-    getLastUrlSegment() {
-        const url = this.getCurrentUrl();
-        return url.substr(url.lastIndexOf('/') + 1);
-    }
-}
-exports.UrlUtils = UrlUtils;
-
-
-/***/ }),
-/* 7 */,
-/* 8 */,
-/* 9 */,
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var rng = __webpack_require__(11);
-var bytesToUuid = __webpack_require__(13);
+var rng = __webpack_require__(7);
+var bytesToUuid = __webpack_require__(9);
 
 function v4(options, buf, offset) {
   var i = buf && offset || 0;
@@ -10609,7 +10587,7 @@ module.exports = v4;
 
 
 /***/ }),
-/* 11 */
+/* 7 */
 /***/ (function(module, exports, __webpack_require__) {
 
 /* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
@@ -10646,10 +10624,10 @@ if (!rng) {
 
 module.exports = rng;
 
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(12)))
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(8)))
 
 /***/ }),
-/* 12 */
+/* 8 */
 /***/ (function(module, exports) {
 
 var g;
@@ -10676,7 +10654,7 @@ module.exports = g;
 
 
 /***/ }),
-/* 13 */
+/* 9 */
 /***/ (function(module, exports) {
 
 /**
@@ -10702,6 +10680,29 @@ function bytesToUuid(buf, offset) {
 }
 
 module.exports = bytesToUuid;
+
+
+/***/ }),
+/* 10 */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+
+Object.defineProperty(exports, "__esModule", { value: true });
+class UrlUtils {
+    getCurrentUrl() {
+        return window.location.href;
+    }
+    currentUrlMatchesRegex(pattern) {
+        const regex = new RegExp(pattern, 'g');
+        return regex.test(this.getCurrentUrl());
+    }
+    getLastUrlSegment() {
+        const url = this.getCurrentUrl();
+        return url.substr(url.lastIndexOf('/') + 1);
+    }
+}
+exports.UrlUtils = UrlUtils;
 
 
 /***/ })

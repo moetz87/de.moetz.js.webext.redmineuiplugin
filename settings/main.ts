@@ -3,6 +3,7 @@ import { AbstractMain } from '../shared/abstract-main';
 import { SettingsLoader } from '../shared/utils/settings-loader';
 import { RuleElementCreator } from '../shared/rule-element-creator';
 import { Settings } from '../shared/model/settings';
+import { Rule } from '../shared/model/rule';
 
 
 export class Main extends AbstractMain {
@@ -18,6 +19,7 @@ export class Main extends AbstractMain {
         this.ui.registerOnRuleDeleteHandler(id => this.deleteRule(id));
         this.ui.registerOnRuleMoveUpHandler(id => this.moveRuleUp(id));
         this.ui.registerOnRuleMoveDownHandler(id => this.moveRuleDown(id));
+        this.ui.registerOnRuleAddHandler(() => this.addRule());
         this.settingsLoader.load().then(this.ui.setSettings);
     }
 
@@ -29,6 +31,13 @@ export class Main extends AbstractMain {
         this.settingsLoader.save(settings)
             .then(() => this.ui.showMessage('Einstellungen erfolgreich gespeichert.'))
             .catch(error => this.ui.showErrorMessage(`Fehler beim Speichern von Einstellungen: ${error}.`));
+    }
+
+    private async addRule() {
+        const settings = await this.settingsLoader.load();
+        settings.rules.push(Rule.empty());
+        this.saveSettings(settings);
+        this.ui.setSettings(settings);
     }
 
     private async deleteRule(id: string) {

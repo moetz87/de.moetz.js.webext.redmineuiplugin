@@ -26,7 +26,7 @@ input {
 }
 
 .content.last {
-    margin-bottom: 0px !important;
+    margin-bottom: 2px;
 }
 
 .titleheader {
@@ -119,22 +119,30 @@ label {
 *** Rules
 ******************************/
 
-#rules input, #rules textarea {
+#rulesanchor input, #rulesanchor textarea {
     width: 100%;
     margin-bottom: 10px;
 }
 
-#rules .ruleheader {
+#rulesanchor .ruleheader {
     /*display: inline-block;*/
     font-weight: 600;
     margin-bottom: 10px;
     border-bottom: 1px solid lightgrey;
 }
 
-#rules .rulecontent {
+#rulesanchor .rulecontent {
     margin: 0px 0px 25px 20px;
 }
 
-#rules .fas {
+#rulesanchor .fas {
     margin-left: 5px;
+    font-size: 115%;
+}
+
+#rules #addRuleBtn {
+    cursor: pointer;
+    color: green;
+    font-size: 200%;
+    float: right;
 }

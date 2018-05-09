@@ -10,3 +10,15 @@ input[type=radio] {
 input[type=radio] {
     bottom: 2px;
 }
+
+.red {
+    color: red;
+}
+
+.green {
+    color: green;
+}
+
+.grey {
+    color: grey;
+}

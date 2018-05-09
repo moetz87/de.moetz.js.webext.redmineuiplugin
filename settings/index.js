@@ -70,8 +70,8 @@
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+const UUIDv4 = __webpack_require__(5);
 const rule_1 = __webpack_require__(1);
-const UUIDv4 = __webpack_require__(9);
 class Settings {
     constructor(url = 'http://localhost:80', rules = DEFAULTRULES) {
         this.url = url;
@@ -98,12 +98,16 @@ const DEFAULTRULES = [
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
+const UUIDv4 = __webpack_require__(5);
 class Rule {
     constructor(id, note, selector, css) {
         this.id = id;
         this.note = note;
         this.selector = selector;
         this.css = css;
+    }
+    static empty() {
+        return new Rule(UUIDv4(), '', '', {});
     }
 }
 exports.Rule = Rule;
@@ -10488,9 +10492,10 @@ return jQuery;
 
 Object.defineProperty(exports, "__esModule", { value: true });
 const user_interface_1 = __webpack_require__(4);
-const abstract_main_1 = __webpack_require__(5);
-const settings_loader_1 = __webpack_require__(6);
-const rule_element_creator_1 = __webpack_require__(7);
+const abstract_main_1 = __webpack_require__(9);
+const settings_loader_1 = __webpack_require__(10);
+const rule_element_creator_1 = __webpack_require__(11);
+const rule_1 = __webpack_require__(1);
 class Main extends abstract_main_1.AbstractMain {
     constructor(ui, settingsLoader) {
         super();
@@ -10502,6 +10507,7 @@ class Main extends abstract_main_1.AbstractMain {
         this.ui.registerOnRuleDeleteHandler(id => this.deleteRule(id));
         this.ui.registerOnRuleMoveUpHandler(id => this.moveRuleUp(id));
         this.ui.registerOnRuleMoveDownHandler(id => this.moveRuleDown(id));
+        this.ui.registerOnRuleAddHandler(() => this.addRule());
         this.settingsLoader.load().then(this.ui.setSettings);
     }
     saveSettingsFromUI() {
@@ -10511,6 +10517,12 @@ class Main extends abstract_main_1.AbstractMain {
         this.settingsLoader.save(settings)
             .then(() => this.ui.showMessage('Einstellungen erfolgreich gespeichert.'))
             .catch(error => this.ui.showErrorMessage(`Fehler beim Speichern von Einstellungen: ${error}.`));
+    }
+    async addRule() {
+        const settings = await this.settingsLoader.load();
+        settings.rules.push(rule_1.Rule.empty());
+        this.saveSettings(settings);
+        this.ui.setSettings(settings);
     }
     async deleteRule(id) {
         const settings = await this.settingsLoader.load();
@@ -10554,25 +10566,28 @@ new Main(new user_interface_1.UserInterface(new rule_element_creator_1.RuleEleme
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
-const settings_1 = __webpack_require__(0);
-const rule_1 = __webpack_require__(1);
 const jQuery = __webpack_require__(2);
+const rule_1 = __webpack_require__(1);
+const settings_1 = __webpack_require__(0);
 class UserInterface {
     constructor(ruleElementCreator) {
         this.ruleElementCreator = ruleElementCreator;
         this.urlField = document.getElementById('urlField');
-        this.rulesAnchor = document.getElementById('rules');
+        this.rulesAnchor = document.getElementById('rulesanchor');
+        this.addRuleButton = document.getElementById('addRuleBtn');
         this.messager = document.getElementById('messager');
         this.onChangeListener = [];
         this.onRuleDeleteHandler = [];
         this.onRuleMoveUpHandler = [];
         this.onRuleMoveDownHandler = [];
+        this.onRuleAddHandler = [];
         this.setSettings = (settings) => {
             this.urlField.value = settings.url;
             this.showRulesOnUI(settings.rules);
         };
         this.urlField.onchange = this.rulesAnchor.onchange =
             () => this.onChangeListener.forEach(callback => callback());
+        this.addRuleButton.onclick = () => this.onRuleAddHandler.forEach(callback => callback());
     }
     getSettings() {
         return new settings_1.Settings(this.urlField.value, this.readRulesFromUI());
@@ -10588,6 +10603,9 @@ class UserInterface {
     }
     registerOnRuleMoveDownHandler(callback) {
         this.onRuleMoveDownHandler.push(callback);
+    }
+    registerOnRuleAddHandler(callback) {
+        this.onRuleAddHandler.push(callback);
     }
     showMessage(message) {
         this.messager.innerText = message;
@@ -10622,6 +10640,137 @@ exports.UserInterface = UserInterface;
 /* 5 */
 /***/ (function(module, exports, __webpack_require__) {
 
+var rng = __webpack_require__(6);
+var bytesToUuid = __webpack_require__(8);
+
+function v4(options, buf, offset) {
+  var i = buf && offset || 0;
+
+  if (typeof(options) == 'string') {
+    buf = options == 'binary' ? new Array(16) : null;
+    options = null;
+  }
+  options = options || {};
+
+  var rnds = options.random || (options.rng || rng)();
+
+  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
+  rnds[6] = (rnds[6] & 0x0f) | 0x40;
+  rnds[8] = (rnds[8] & 0x3f) | 0x80;
+
+  // Copy bytes to buffer, if provided
+  if (buf) {
+    for (var ii = 0; ii < 16; ++ii) {
+      buf[i + ii] = rnds[ii];
+    }
+  }
+
+  return buf || bytesToUuid(rnds);
+}
+
+module.exports = v4;
+
+
+/***/ }),
+/* 6 */
+/***/ (function(module, exports, __webpack_require__) {
+
+/* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
+// browser this is a little complicated due to unknown quality of Math.random()
+// and inconsistent support for the `crypto` API.  We do the best we can via
+// feature-detection
+var rng;
+
+var crypto = global.crypto || global.msCrypto; // for IE 11
+if (crypto && crypto.getRandomValues) {
+  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
+  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
+  rng = function whatwgRNG() {
+    crypto.getRandomValues(rnds8);
+    return rnds8;
+  };
+}
+
+if (!rng) {
+  // Math.random()-based (RNG)
+  //
+  // If all else fails, use Math.random().  It's fast, but is of unspecified
+  // quality.
+  var rnds = new Array(16);
+  rng = function() {
+    for (var i = 0, r; i < 16; i++) {
+      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
+      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
+    }
+
+    return rnds;
+  };
+}
+
+module.exports = rng;
+
+/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(7)))
+
+/***/ }),
+/* 7 */
+/***/ (function(module, exports) {
+
+var g;
+
+// This works in non-strict mode
+g = (function() {
+	return this;
+})();
+
+try {
+	// This works if eval is allowed (see CSP)
+	g = g || Function("return this")() || (1,eval)("this");
+} catch(e) {
+	// This works if the window reference is available
+	if(typeof window === "object")
+		g = window;
+}
+
+// g can still be undefined, but nothing to do about it...
+// We return undefined, instead of nothing here, so it's
+// easier to handle this case. if(!global) { ...}
+
+module.exports = g;
+
+
+/***/ }),
+/* 8 */
+/***/ (function(module, exports) {
+
+/**
+ * Convert array of 16 byte values to UUID string format of the form:
+ * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
+ */
+var byteToHex = [];
+for (var i = 0; i < 256; ++i) {
+  byteToHex[i] = (i + 0x100).toString(16).substr(1);
+}
+
+function bytesToUuid(buf, offset) {
+  var i = offset || 0;
+  var bth = byteToHex;
+  return bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] + '-' +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]] +
+          bth[buf[i++]] + bth[buf[i++]];
+}
+
+module.exports = bytesToUuid;
+
+
+/***/ }),
+/* 9 */
+/***/ (function(module, exports, __webpack_require__) {
+
 "use strict";
 
 Object.defineProperty(exports, "__esModule", { value: true });
@@ -10635,7 +10784,7 @@ exports.AbstractMain = AbstractMain;
 
 
 /***/ }),
-/* 6 */
+/* 10 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10655,7 +10804,7 @@ exports.SettingsLoader = SettingsLoader;
 
 
 /***/ }),
-/* 7 */
+/* 11 */
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -10683,7 +10832,7 @@ class RuleElementCreator {
         itemRight.className = 'flex-item right';
         itemRight.appendChild(this.createClickableIcon('fas fa-arrow-alt-circle-up', onUpClicked));
         itemRight.appendChild(this.createClickableIcon('fas fa-arrow-alt-circle-down', onDownClicked));
-        itemRight.appendChild(this.createClickableIcon('fas fa-trash-alt', onDeleteClicked));
+        itemRight.appendChild(this.createClickableIcon('fas fa-trash-alt red', onDeleteClicked));
         const container = document.createElement('div');
         container.className = 'ruleheader flex-container';
         container.appendChild(itemLeft);
@@ -10737,145 +10886,13 @@ class RuleElementCreator {
         const i = document.createElement('i');
         i.className = iconClass;
         const a = document.createElement('a');
-        a.onclick = () => onClick();
+        a.onclick = onClick;
         a.style.cursor = 'pointer';
         a.appendChild(i);
         return a;
     }
 }
 exports.RuleElementCreator = RuleElementCreator;
-
-
-/***/ }),
-/* 8 */,
-/* 9 */
-/***/ (function(module, exports, __webpack_require__) {
-
-var rng = __webpack_require__(10);
-var bytesToUuid = __webpack_require__(12);
-
-function v4(options, buf, offset) {
-  var i = buf && offset || 0;
-
-  if (typeof(options) == 'string') {
-    buf = options == 'binary' ? new Array(16) : null;
-    options = null;
-  }
-  options = options || {};
-
-  var rnds = options.random || (options.rng || rng)();
-
-  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`
-  rnds[6] = (rnds[6] & 0x0f) | 0x40;
-  rnds[8] = (rnds[8] & 0x3f) | 0x80;
-
-  // Copy bytes to buffer, if provided
-  if (buf) {
-    for (var ii = 0; ii < 16; ++ii) {
-      buf[i + ii] = rnds[ii];
-    }
-  }
-
-  return buf || bytesToUuid(rnds);
-}
-
-module.exports = v4;
-
-
-/***/ }),
-/* 10 */
-/***/ (function(module, exports, __webpack_require__) {
-
-/* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the
-// browser this is a little complicated due to unknown quality of Math.random()
-// and inconsistent support for the `crypto` API.  We do the best we can via
-// feature-detection
-var rng;
-
-var crypto = global.crypto || global.msCrypto; // for IE 11
-if (crypto && crypto.getRandomValues) {
-  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto
-  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef
-  rng = function whatwgRNG() {
-    crypto.getRandomValues(rnds8);
-    return rnds8;
-  };
-}
-
-if (!rng) {
-  // Math.random()-based (RNG)
-  //
-  // If all else fails, use Math.random().  It's fast, but is of unspecified
-  // quality.
-  var rnds = new Array(16);
-  rng = function() {
-    for (var i = 0, r; i < 16; i++) {
-      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;
-      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;
-    }
-
-    return rnds;
-  };
-}
-
-module.exports = rng;
-
-/* WEBPACK VAR INJECTION */}.call(exports, __webpack_require__(11)))
-
-/***/ }),
-/* 11 */
-/***/ (function(module, exports) {
-
-var g;
-
-// This works in non-strict mode
-g = (function() {
-	return this;
-})();
-
-try {
-	// This works if eval is allowed (see CSP)
-	g = g || Function("return this")() || (1,eval)("this");
-} catch(e) {
-	// This works if the window reference is available
-	if(typeof window === "object")
-		g = window;
-}
-
-// g can still be undefined, but nothing to do about it...
-// We return undefined, instead of nothing here, so it's
-// easier to handle this case. if(!global) { ...}
-
-module.exports = g;
-
-
-/***/ }),
-/* 12 */
-/***/ (function(module, exports) {
-
-/**
- * Convert array of 16 byte values to UUID string format of the form:
- * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX
- */
-var byteToHex = [];
-for (var i = 0; i < 256; ++i) {
-  byteToHex[i] = (i + 0x100).toString(16).substr(1);
-}
-
-function bytesToUuid(buf, offset) {
-  var i = offset || 0;
-  var bth = byteToHex;
-  return bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] + '-' +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]] +
-          bth[buf[i++]] + bth[buf[i++]];
-}
-
-module.exports = bytesToUuid;
 
 
 /***/ })

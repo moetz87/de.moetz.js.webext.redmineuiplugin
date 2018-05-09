@@ -1,3 +1,5 @@
+import * as UUIDv4 from 'uuid/v4';
+
 export class Rule {
 
     constructor(
@@ -6,6 +8,10 @@ export class Rule {
         public selector: string,
         public css: any) {
 
+    }
+
+    public static empty(): Rule {
+        return new Rule(UUIDv4(), '', '', {});
     }
 
 }
