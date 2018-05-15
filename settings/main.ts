@@ -1,10 +1,9 @@
-import { UserInterface } from './user-interface';
 import { AbstractMain } from '../shared/abstract-main';
-import { SettingsLoader } from '../shared/utils/settings-loader';
-import { RuleElementCreator } from '../shared/rule-element-creator';
-import { Settings } from '../shared/model/settings';
 import { Rule } from '../shared/model/rule';
-
+import { Settings } from '../shared/model/settings';
+import { RuleElementCreator } from '../shared/rule-element-creator';
+import { SettingsLoader } from '../shared/utils/settings-loader';
+import { UserInterface } from './user-interface';
 
 export class Main extends AbstractMain {
 

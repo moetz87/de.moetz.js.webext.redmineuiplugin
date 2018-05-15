@@ -5,7 +5,8 @@ export class Settings {
 
     constructor(
         public url = 'http://localhost:80',
-        public rules: Rule[] = DEFAULTRULES) {
+        public rules: Rule[] = DEFAULTRULES,
+        public hiddenComments = false) {
 
     }
 
