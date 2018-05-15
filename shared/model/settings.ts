@@ -36,10 +36,5 @@ const DEFAULTRULES = [
         UUIDv4(),
         'Hervorheben des Tickets, das ich in Bearbeitung habe',
         'tr:has(td.status:contains("In Bearbeitung")):has(td.assigned_to:contains("Marco Oetz"))',
-        { 'background-color': '#d3e0ed' }),
-    new Rule(
-        UUIDv4(),
-        'Ausgrauen von Kommentaren, die lediglich Statusänderungen vorgenommen haben',
-        'div[id^="change-"]:not(".has-notes")',
-        { 'opacity': '0.25' })
+        { 'background-color': '#d3e0ed' })
 ];
