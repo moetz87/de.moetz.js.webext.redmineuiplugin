@@ -4,9 +4,9 @@ declare var browser: any;
 
 export class SettingsLoader {
 
-    public load(): Promise<Settings> {
-        return browser.storage.local.get()
-            .then((json: any) => Settings.fromJson(json));
+    public async load(): Promise<Settings> {
+        const json = await browser.storage.local.get();
+        return Settings.fromJson(json);
     }
 
     public save(settings: Settings): Promise<void> {

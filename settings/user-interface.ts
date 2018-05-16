@@ -81,10 +81,11 @@ export class UserInterface {
         const rules: Rule[] = [];
         jQuery(this.rulesAnchor).find('.ruleId').each((index, element) => {
             const id = element.id;
+            const enabled = jQuery(`#${id}-enabled`).prop('checked') !== false;
             const note = <string> jQuery(`#${id}-note`).first().val();
             const selector = <string> jQuery(`#${id}-selector`).first().val();
             const css = JSON.parse(<string> jQuery(`#${id}-css`).first().val());
-            rules.push(new Rule(id, note, selector, css));
+            rules.push(new Rule(id, note, selector, css, enabled));
         });
         return rules;
     }
