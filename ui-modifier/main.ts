@@ -34,7 +34,7 @@ export class Main extends AbstractMain {
 
     private applyRules(rules: Rule[]) {
         console.log('applying rules');
-        rules.forEach(rule => jQuery(rule.selector).css(rule.css));
+        rules.filter(rule => rule.enabled !== false).forEach(rule => jQuery(rule.selector).css(rule.css));
     }
 
     private showOrReplaceCommentsToggle(hidden: boolean) {

@@ -11,7 +11,15 @@ export class Settings {
     }
 
     public static fromJson(json: any): Settings {
-        return Object.assign(new Settings(), json);
+        const settings = Object.assign(new Settings(), json);
+        this.migrate_v101_v102(settings);
+        return settings;
+    }
+
+    private static migrate_v101_v102(settings: Settings) {
+        settings.rules
+            .filter(rule => rule.enabled == null)
+            .forEach(rule => rule.enabled = true);
     }
 
 }
@@ -21,20 +29,24 @@ const DEFAULTRULES = [
         UUIDv4(),
         'Grüne Färbung für Tickets mit Status "In Bearbeitung"',
         'td.status:contains("In Bearbeitung")',
-        { 'color': '#278753' }),
+        { 'color': '#278753' },
+        true),
     new Rule(
         UUIDv4(),
         'Rote Färbung und Fettdruck für Tickets mit Status "Gelöst"',
         'td.status:contains("Gelöst")',
-        { 'font-weight': 'bold', 'color': '#f44242' }),
+        { 'font-weight': 'bold', 'color': '#f44242' },
+        true),
     new Rule(
         UUIDv4(),
         'Ausgrauen von Tickets mit Status "Erledigt"',
         'tr:has(td.status:contains("Erledigt"))',
-        { 'opacity': '0.5' }),
+        { 'opacity': '0.5' },
+        true),
     new Rule(
         UUIDv4(),
         'Hervorheben des Tickets, das ich in Bearbeitung habe',
         'tr:has(td.status:contains("In Bearbeitung")):has(td.assigned_to:contains("Marco Oetz"))',
-        { 'background-color': '#d3e0ed' })
+        { 'background-color': '#d3e0ed' },
+        true)
 ];

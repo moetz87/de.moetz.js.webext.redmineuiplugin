@@ -6,12 +6,13 @@ export class Rule {
         public readonly id,
         public note: string,
         public selector: string,
-        public css: any) {
+        public css: any,
+        public enabled: boolean = true) {
 
     }
 
     public static empty(): Rule {
-        return new Rule(UUIDv4(), '', '', {});
+        return new Rule(UUIDv4(), '', '', {}, true);
     }
 
 }
