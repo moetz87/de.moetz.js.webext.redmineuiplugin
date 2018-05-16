@@ -1,6 +1,6 @@
 {
     "name": "de.moetz.js.webext.redmineuiplugin",
-    "version": "1.0.1",
+    "version": "1.0.2",
     "scripts": {
         "build": "npm install && npm run webpack && npm run mkdir -- build/dist/ && npm run zip",
         "start": "npm run build && concurrently \"npm run webext\" \"npm run webpack -- --watch\"",
