@@ -1,4 +1,4 @@
-import { Rule } from './model/rule';
+import { Rule } from '../shared/model/rule';
 
 export class RuleElementCreator {
 
@@ -45,6 +45,7 @@ export class RuleElementCreator {
 
     private createLabelElement(forId: string, text: string): HTMLLabelElement {
         const label = document.createElement('label');
+        // tslint:disable-next-line:no-string-literal
         label.attributes['for'] = forId;
         label.innerText = text;
         return label;

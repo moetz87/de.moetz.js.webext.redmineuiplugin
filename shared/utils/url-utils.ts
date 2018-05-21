@@ -1,22 +1,18 @@
-export class UrlUtils {
+export function getCurrentUrl(): string {
+    return `${location.protocol}//${location.host}${location.pathname}`;
+}
 
-    public getCurrentUrl(): string {
-        return window.location.href;
-    }
+export function currentUrlMatchesRegex(pattern: string): boolean {
+    const regex = new RegExp(pattern, 'g');
+    return regex.test(getCurrentUrl());
+}
 
-    public currentUrlMatchesRegex(pattern: string): boolean {
-        const regex = new RegExp(pattern, 'g');
-        return regex.test(this.getCurrentUrl());
-    }
+export function urlEndsWith(pattern: string): boolean {
+    const regex = new RegExp(`^.*${pattern}$`);
+    return regex.test(getCurrentUrl());
+}
 
-    public urlEndsWith(pattern: string): boolean {
-        const regex = new RegExp(`^.*${pattern}$`);
-        return regex.test(this.getCurrentUrl());
-    }
-
-    public getLastUrlSegment(): string {
-        const url = this.getCurrentUrl();
-        return url.substr(url.lastIndexOf('/') + 1);
-    }
-
+export function getLastUrlSegment(): string {
+    const url = getCurrentUrl();
+    return url.substr(url.lastIndexOf('/') + 1);
 }

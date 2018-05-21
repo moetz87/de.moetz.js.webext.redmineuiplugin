@@ -1,73 +1,65 @@
-import * as jQuery from 'jquery';
 import { AbstractMain } from '../shared/abstract-main';
 import { Rule } from '../shared/model/rule';
-import { SettingsLoader } from '../shared/utils/settings-loader';
-import { UrlUtils } from '../shared/utils/url-utils';
+import { appendAfter, applyCss, findFirst } from '../shared/utils/html-utils';
+import * as SettingsLoader from '../shared/utils/settings-loader';
+import * as UrlUtils from '../shared/utils/url-utils';
 
 const DETAILEDVIEWPATTERN = '\/issues\/[0-9]+';
 const HIDDENCOMMENTS_SELECTOR = 'div[id^="change-"]:not(".has-notes")';
-const HIDDENCOMMENTS_CSS = { 'display': 'none' };
-const UNHIDDENCOMMENTS_CSS = { 'display': 'inline' };
+const HIDDENCOMMENTS_CSS = { display: 'none' };
+const UNHIDDENCOMMENTS_CSS = { display: 'inline' };
 
 export class Main extends AbstractMain {
 
-    constructor(
-        private readonly urlUtils: UrlUtils,
-        private readonly settingsLoader: SettingsLoader) {
-        super();
-    }
-
     public async onExecuteMain() {
-        const settings = await this.settingsLoader.load();
-        if (!this.urlUtils.currentUrlMatchesRegex(settings.url)) {
-            console.log(`URL ${this.urlUtils.getCurrentUrl()} not matching pattern ${settings.url}.`);
+        const settings = await SettingsLoader.load();
+        if (!UrlUtils.currentUrlMatchesRegex(settings.url)) {
+            console.log(`URL ${UrlUtils.getCurrentUrl()} not matching pattern ${settings.url}.`);
             return;
         }
-        if (this.urlUtils.urlEndsWith(DETAILEDVIEWPATTERN)) {
-            console.log(`URL ${this.urlUtils.getCurrentUrl()} ends with ${DETAILEDVIEWPATTERN}`);
+        if (UrlUtils.urlEndsWith(DETAILEDVIEWPATTERN)) {
+            console.log(`URL ${UrlUtils.getCurrentUrl()} ends with ${DETAILEDVIEWPATTERN}`);
             this.showOrReplaceCommentsToggle(settings.hiddenComments);
             this.showOrHideComments(settings.hiddenComments);
         }
-        console.log(`URL ${this.urlUtils.getCurrentUrl()} matching pattern ${settings.url}.`);
+        console.log(`URL ${UrlUtils.getCurrentUrl()} matching pattern ${settings.url}.`);
         this.applyRules(settings.rules);
     }
 
     private applyRules(rules: Rule[]) {
         console.log('applying rules');
-        rules.filter(rule => rule.enabled !== false).forEach(rule => jQuery(rule.selector).css(rule.css));
+        rules.filter(rule => rule.enabled !== false)
+            .forEach(rule => applyCss(rule.selector, rule.css));
     }
 
     private showOrReplaceCommentsToggle(hidden: boolean) {
-        jQuery('#comments-toggle').remove();
+        findFirst('#comments-toggle').remove();
         const toggle = document.createElement('a');
         toggle.id = 'comments-toggle';
         toggle.style.cursor = 'pointer';
         toggle.innerText = (hidden === true) ? 'Kommentar ohne Inhalt anzeigen' : 'Kommentare ohne Inhalt ausblenden';
         toggle.onclick = () => this.onCommentsToggle();
-        jQuery('#history h3').first().after(toggle);
+        appendAfter(findFirst('#history h3'), toggle);
     }
 
     private showOrHideComments(hidden: boolean) {
         console.log(`Hidden? ${hidden}`);
         if (hidden === true) {
-            jQuery(HIDDENCOMMENTS_SELECTOR).css(HIDDENCOMMENTS_CSS);
+            applyCss(HIDDENCOMMENTS_SELECTOR, HIDDENCOMMENTS_CSS);
         } else {
-            jQuery(HIDDENCOMMENTS_SELECTOR).css(UNHIDDENCOMMENTS_CSS);
+            applyCss(HIDDENCOMMENTS_SELECTOR, UNHIDDENCOMMENTS_CSS);
         }
     }
 
     private async onCommentsToggle() {
         console.log('toggle clicked');
-        const settings = await this.settingsLoader.load();
+        const settings = await SettingsLoader.load();
         settings.hiddenComments = !settings.hiddenComments;
-        this.settingsLoader.save(settings);
+        SettingsLoader.save(settings);
         this.showOrReplaceCommentsToggle(settings.hiddenComments);
         this.showOrHideComments(settings.hiddenComments);
     }
 
 }
 
-new Main(
-    new UrlUtils(),
-    new SettingsLoader()
-).main();
+new Main().main();
