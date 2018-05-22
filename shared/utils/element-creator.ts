@@ -25,6 +25,17 @@ export function createInputWithLabel(id: string, inputType: string, text: string
     return div;
 }
 
+// tslint:disable-next-line:max-line-length
+export function createInputWithLinkLabel(id: string, inputType: string, text: string, linkAddr: string, value: string | boolean): HTMLDivElement {
+    const icon = createClickableIcon('fas fa-external-link-alt', () => window.open(linkAddr));
+    const label = createLabelElement(id, text);
+    label.appendChild(icon);
+    const div = document.createElement('div');
+    div.appendChild(label);
+    div.appendChild(createInputElement(id, inputType, value));
+    return div;
+}
+
 export function createTextareaElement(id: string, value: string): HTMLTextAreaElement {
     const textarea = document.createElement('textarea');
     textarea.id = id;

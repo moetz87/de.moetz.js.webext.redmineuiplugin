@@ -17,6 +17,13 @@ export function findFirst<T extends Element>(selector: string): T {
     return <T>find(selector)[0];
 }
 
+export function ifExists<T extends Element>(selector: string, callback: (element: T) => void) {
+    const elements = find(selector);
+    if (elements.length !== 0) {
+        callback(<T>elements[0]);
+    }
+}
+
 export function appendAfter(target: HTMLElement, element: HTMLElement) {
     if (!target.parentNode) {
         throw new Error(`Element=${target} hat kein Eltern-Element. Kann nicht hinzufügen.`);

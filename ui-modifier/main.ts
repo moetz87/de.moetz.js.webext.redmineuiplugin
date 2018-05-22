@@ -1,6 +1,6 @@
 import { AbstractMain } from '../shared/abstract-main';
 import { Rule } from '../shared/model/rule';
-import { appendAfter, applyCss, findFirst } from '../shared/utils/html-utils';
+import { appendAfter, applyCss, findFirst, ifExists } from '../shared/utils/html-utils';
 import * as SettingsLoader from '../shared/utils/settings-loader';
 import * as UrlUtils from '../shared/utils/url-utils';
 
@@ -33,7 +33,7 @@ export class Main extends AbstractMain {
     }
 
     private showOrReplaceCommentsToggle(hidden: boolean) {
-        findFirst('#comments-toggle').remove();
+        ifExists('#comments-toogle', e => e.remove());
         const toggle = document.createElement('a');
         toggle.id = 'comments-toggle';
         toggle.style.cursor = 'pointer';
