@@ -1,7 +1,7 @@
 import { sizzle } from '../sizzle-dynamic';
 
 export function find<T extends Element>(selector: string): T[] {
-    const elements = sizzle(`${selector}`);
+    const elements = sizzle(selector);
     if (elements.length === 0) {
         console.log(`Kein Element mit Selector=${selector} gefunden.`);
         return [];

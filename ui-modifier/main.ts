@@ -33,7 +33,7 @@ export class Main extends AbstractMain {
     }
 
     private showOrReplaceCommentsToggle(hidden: boolean) {
-        ifExists('#comments-toogle', e => e.remove());
+        ifExists('#comments-toggle', e => e.remove());
         const toggle = document.createElement('a');
         toggle.id = 'comments-toggle';
         toggle.style.cursor = 'pointer';
