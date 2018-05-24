@@ -43,7 +43,6 @@ export class Main extends AbstractMain {
     }
 
     private showOrHideComments(hidden: boolean) {
-        console.log(`Hidden? ${hidden}`);
         if (hidden === true) {
             applyCss(HIDDENCOMMENTS_SELECTOR, HIDDENCOMMENTS_CSS);
         } else {
