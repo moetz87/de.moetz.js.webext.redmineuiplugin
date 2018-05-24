@@ -1,14 +1,14 @@
-import * as jQuery from 'jquery';
 import { Rule } from '../shared/model/rule';
 import { Settings } from '../shared/model/settings';
-import { RuleElementCreator } from '../shared/rule-element-creator';
+import { find, findFirst, removeChildren } from '../shared/utils/html-utils';
+import { RuleElementCreator } from './rule-element-creator';
 
 export class UserInterface {
 
-    private readonly urlField = <HTMLInputElement>document.getElementById('urlField');
-    private readonly rulesAnchor = <HTMLDivElement>document.getElementById('rulesanchor');
-    private readonly addRuleButton = <HTMLElement>document.getElementById('addRuleBtn');
-    private readonly messager = <HTMLElement>document.getElementById('messager');
+    private readonly urlField = findFirst<HTMLInputElement>('#urlField');
+    private readonly rulesAnchor = findFirst<HTMLDivElement>('#rulesanchor');
+    private readonly addRuleButton = findFirst<HTMLElement>('#addRuleBtn');
+    private readonly messager = findFirst<HTMLElement>('#messager');
     private onChangeListener: (() => void)[] = [];
     private onRuleDeleteHandler: ((id: string) => void)[] = [];
     private onRuleMoveUpHandler: ((id: string) => void)[] = [];
@@ -16,7 +16,8 @@ export class UserInterface {
     private onRuleAddHandler: (() => void)[] = [];
 
     constructor(
-        private readonly ruleElementCreator: RuleElementCreator) {
+        private readonly ruleElementCreator: RuleElementCreator
+    ) {
         this.urlField.onchange = this.rulesAnchor.onchange =
             () => this.onChangeListener.forEach(callback => callback());
         this.addRuleButton.onclick = () => this.onRuleAddHandler.forEach(callback => callback());
@@ -24,13 +25,13 @@ export class UserInterface {
 
     public setSettings = (settings: Settings) => {
         this.urlField.value = settings.url;
-        this.showRulesOnUI(settings.rules);
+        this.setRulesToUI(settings.rules);
     }
 
     public getSettings(): Settings {
         return new Settings(
             this.urlField.value,
-            this.readRulesFromUI()
+            this.getRulesFromUI()
         );
     }
 
@@ -66,8 +67,8 @@ export class UserInterface {
         this.messager.className = 'error';
     }
 
-    private showRulesOnUI(rules: Rule[]) {
-        jQuery(this.rulesAnchor).empty();
+    private setRulesToUI(rules: Rule[]) {
+        removeChildren(this.rulesAnchor);
         rules.forEach(rule => this.rulesAnchor.appendChild(
             this.ruleElementCreator.createRuleElement(
                 rule,
@@ -77,14 +78,14 @@ export class UserInterface {
         ));
     }
 
-    private readRulesFromUI(): Rule[] {
+    private getRulesFromUI(): Rule[] {
         const rules: Rule[] = [];
-        jQuery(this.rulesAnchor).find('.ruleId').each((index, element) => {
+        find('.ruleId').forEach(element => {
             const id = element.id;
-            const enabled = jQuery(`#${id}-enabled`).prop('checked') !== false;
-            const note = <string> jQuery(`#${id}-note`).first().val();
-            const selector = <string> jQuery(`#${id}-selector`).first().val();
-            const css = JSON.parse(<string> jQuery(`#${id}-css`).first().val());
+            const enabled = findFirst<HTMLInputElement>(`#${id}-enabled`).checked !== false;
+            const note = findFirst<HTMLInputElement>(`#${id}-note`).value;
+            const selector = findFirst<HTMLInputElement>(`#${id}-selector`).value;
+            const css = JSON.parse(findFirst<HTMLInputElement>(`#${id}-css`).value);
             rules.push(new Rule(id, note, selector, css, enabled));
         });
         return rules;

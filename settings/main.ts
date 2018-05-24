@@ -1,15 +1,15 @@
 import { AbstractMain } from '../shared/abstract-main';
 import { Rule } from '../shared/model/rule';
 import { Settings } from '../shared/model/settings';
-import { RuleElementCreator } from '../shared/rule-element-creator';
-import { SettingsLoader } from '../shared/utils/settings-loader';
+import * as SettingsLoader from '../shared/utils/settings-loader';
+import { RuleElementCreator } from './rule-element-creator';
 import { UserInterface } from './user-interface';
 
 export class Main extends AbstractMain {
 
     constructor(
-        readonly ui: UserInterface,
-        readonly settingsLoader: SettingsLoader) {
+        readonly ui: UserInterface
+    ) {
         super();
     }
 
@@ -19,7 +19,7 @@ export class Main extends AbstractMain {
         this.ui.registerOnRuleMoveUpHandler(id => this.moveRuleUp(id));
         this.ui.registerOnRuleMoveDownHandler(id => this.moveRuleDown(id));
         this.ui.registerOnRuleAddHandler(() => this.addRule());
-        this.settingsLoader.load().then(this.ui.setSettings);
+        SettingsLoader.load().then(this.ui.setSettings);
     }
 
     private saveSettingsFromUI() {
@@ -27,27 +27,27 @@ export class Main extends AbstractMain {
     }
 
     private saveSettings(settings: Settings) {
-        this.settingsLoader.save(settings)
+        SettingsLoader.save(settings)
             .then(() => this.ui.showMessage('Einstellungen erfolgreich gespeichert.'))
             .catch(error => this.ui.showErrorMessage(`Fehler beim Speichern von Einstellungen: ${error}.`));
     }
 
     private async addRule() {
-        const settings = await this.settingsLoader.load();
+        const settings = await SettingsLoader.load();
         settings.rules.push(Rule.empty());
         this.saveSettings(settings);
         this.ui.setSettings(settings);
     }
 
     private async deleteRule(id: string) {
-        const settings = await this.settingsLoader.load();
+        const settings = await SettingsLoader.load();
         settings.rules = settings.rules.filter(rule => rule.id !== id);
         this.saveSettings(settings);
         this.ui.setSettings(settings);
     }
 
     private async moveRuleUp(id: string) {
-        const settings = await this.settingsLoader.load();
+        const settings = await SettingsLoader.load();
         const rules = settings.rules;
         const index = rules.findIndex(rule => rule.id === id);
         if (rules.length > 1 && index !== 0) {
@@ -60,7 +60,7 @@ export class Main extends AbstractMain {
     }
 
     private async moveRuleDown(id: string) {
-        const settings = await this.settingsLoader.load();
+        const settings = await SettingsLoader.load();
         const rules = settings.rules;
         const index = rules.findIndex(rule => rule.id === id);
         if (rules.length > 1 && index !== rules.length - 1) {
@@ -77,6 +77,5 @@ export class Main extends AbstractMain {
 new Main(
     new UserInterface(
         new RuleElementCreator()
-    ),
-    new SettingsLoader()
+    )
 ).main();
