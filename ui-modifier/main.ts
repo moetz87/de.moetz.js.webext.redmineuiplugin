@@ -1,18 +1,19 @@
-import { AbstractMain } from '../shared/abstract-main';
+import { HtmlUtils } from 'ts-common/html-utils';
+import { SettingsLoader } from 'ts-common/settings-loader';
+import { UrlUtils } from 'ts-common/url-utils';
+import { WebextMain } from 'ts-common/webext-main';
 import { Rule } from '../shared/model/rule';
-import { appendAfter, applyCss, findFirst, ifExists } from '../shared/utils/html-utils';
-import * as SettingsLoader from '../shared/utils/settings-loader';
-import * as UrlUtils from '../shared/utils/url-utils';
+import { Settings } from '../shared/model/settings';
 
 const DETAILEDVIEWPATTERN = '\/issues\/[0-9]+';
 const HIDDENCOMMENTS_SELECTOR = 'div[id^="change-"]:not(".has-notes")';
 const HIDDENCOMMENTS_CSS = { display: 'none' };
 const UNHIDDENCOMMENTS_CSS = { display: 'inline' };
 
-export class Main extends AbstractMain {
+export class Main extends WebextMain {
 
     public async onExecuteMain() {
-        const settings = await SettingsLoader.load();
+        const settings = await SettingsLoader.load(Settings);
         if (!UrlUtils.currentUrlMatchesRegex(settings.url)) {
             console.log(`URL ${UrlUtils.getCurrentUrl()} not matching pattern ${settings.url}.`);
             return;
@@ -29,30 +30,30 @@ export class Main extends AbstractMain {
     private applyRules(rules: Rule[]) {
         console.log('applying rules');
         rules.filter(rule => rule.enabled !== false)
-            .forEach(rule => applyCss(rule.selector, rule.css));
+            .forEach(rule => HtmlUtils.applyCss(rule.selector, rule.css));
     }
 
     private showOrReplaceCommentsToggle(hidden: boolean) {
-        ifExists('#comments-toggle', e => e.remove());
+        HtmlUtils.remove('#comments-toggle');
         const toggle = document.createElement('a');
         toggle.id = 'comments-toggle';
         toggle.style.cursor = 'pointer';
         toggle.innerText = (hidden === true) ? 'Kommentar ohne Inhalt anzeigen' : 'Kommentare ohne Inhalt ausblenden';
         toggle.onclick = () => this.onCommentsToggle();
-        appendAfter(findFirst('#history h3'), toggle);
+        HtmlUtils.appendAfter(HtmlUtils.findFirst('#history h3'), toggle);
     }
 
     private showOrHideComments(hidden: boolean) {
         if (hidden === true) {
-            applyCss(HIDDENCOMMENTS_SELECTOR, HIDDENCOMMENTS_CSS);
+            HtmlUtils.applyCss(HIDDENCOMMENTS_SELECTOR, HIDDENCOMMENTS_CSS);
         } else {
-            applyCss(HIDDENCOMMENTS_SELECTOR, UNHIDDENCOMMENTS_CSS);
+            HtmlUtils.applyCss(HIDDENCOMMENTS_SELECTOR, UNHIDDENCOMMENTS_CSS);
         }
     }
 
     private async onCommentsToggle() {
         console.log('toggle clicked');
-        const settings = await SettingsLoader.load();
+        const settings = await SettingsLoader.load(Settings);
         settings.hiddenComments = !settings.hiddenComments;
         SettingsLoader.save(settings);
         this.showOrReplaceCommentsToggle(settings.hiddenComments);

@@ -1,9 +1,9 @@
 {
     "name": "de.moetz.js.webext.redmineuiplugin",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "scripts": {
-        "build": "npm install && npm run webpack && npm run mkdir -- build/dist/ && npm run zip",
-        "start": "npm run build && concurrently \"npm run webext\" \"npm run webpack -- --watch\"",
+        "build": "npm run webpack -- --mode production && npm run mkdir -- build/dist/ && npm run zip",
+        "start": "concurrently \"npm run webpack -- --mode development --watch\" \"npm run webext\"",
         "webpack": "webpack --config webpack.config.js",
         "webext": "web-ext run --firefox=firefox",
         "zip": "bestzip build/dist/$npm_package_name-$npm_package_version.zip $npm_package_zipFiles",
@@ -11,23 +11,19 @@
     },
     "zipFiles": "manifest.json icons/ settings/ ui-modifier/",
     "dependencies": {
-        "domready": "1.0.8",
-        "sizzle": "2.3.3",
+        "ts-common": "1.0.26",
         "uuid": "3.1.0"
     },
     "devDependencies": {
-        "@types/jquery": "3.3.1",
-        "@types/sizzle": "2.3.1",
-        "bestzip": "1.1.4",
-        "concurrently": "3.5.0",
+        "bestzip": "2.0.0",
+        "concurrently": "4.0.1",
         "mkdirp": "0.5.1",
-        "node": "9.2.0",
-        "npm": "5.6.0",
         "tslint": "5.8.0",
         "tslint-microsoft-contrib": "5.0.1",
-        "ts-loader": "3.3.1",
-        "typescript": "2.6.1",
-        "web-ext": "2.6.0",
-        "webpack": "3.8.1"
+        "ts-loader": "4.5.0",
+        "typescript": "3.0.3",
+        "web-ext": "2.9.0",
+        "webpack": "4.17.1",
+        "webpack-cli": "3.1.0"
     }
 }

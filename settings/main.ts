@@ -1,11 +1,11 @@
-import { AbstractMain } from '../shared/abstract-main';
+import { SettingsLoader } from 'ts-common/settings-loader';
+import { WebextMain } from 'ts-common/webext-main';
 import { Rule } from '../shared/model/rule';
 import { Settings } from '../shared/model/settings';
-import * as SettingsLoader from '../shared/utils/settings-loader';
 import { RuleElementCreator } from './rule-element-creator';
 import { UserInterface } from './user-interface';
 
-export class Main extends AbstractMain {
+export class Main extends WebextMain {
 
     constructor(
         readonly ui: UserInterface
@@ -19,7 +19,7 @@ export class Main extends AbstractMain {
         this.ui.registerOnRuleMoveUpHandler(id => this.moveRuleUp(id));
         this.ui.registerOnRuleMoveDownHandler(id => this.moveRuleDown(id));
         this.ui.registerOnRuleAddHandler(() => this.addRule());
-        SettingsLoader.load().then(this.ui.setSettings);
+        SettingsLoader.load(Settings).then(this.ui.setSettings);
     }
 
     private saveSettingsFromUI() {
@@ -33,21 +33,21 @@ export class Main extends AbstractMain {
     }
 
     private async addRule() {
-        const settings = await SettingsLoader.load();
+        const settings = await SettingsLoader.load(Settings);
         settings.rules.push(Rule.empty());
         this.saveSettings(settings);
         this.ui.setSettings(settings);
     }
 
     private async deleteRule(id: string) {
-        const settings = await SettingsLoader.load();
+        const settings = await SettingsLoader.load(Settings);
         settings.rules = settings.rules.filter(rule => rule.id !== id);
         this.saveSettings(settings);
         this.ui.setSettings(settings);
     }
 
     private async moveRuleUp(id: string) {
-        const settings = await SettingsLoader.load();
+        const settings = await SettingsLoader.load(Settings);
         const rules = settings.rules;
         const index = rules.findIndex(rule => rule.id === id);
         if (rules.length > 1 && index !== 0) {
@@ -60,7 +60,7 @@ export class Main extends AbstractMain {
     }
 
     private async moveRuleDown(id: string) {
-        const settings = await SettingsLoader.load();
+        const settings = await SettingsLoader.load(Settings);
         const rules = settings.rules;
         const index = rules.findIndex(rule => rule.id === id);
         if (rules.length > 1 && index !== rules.length - 1) {

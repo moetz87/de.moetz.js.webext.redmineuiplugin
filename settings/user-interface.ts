@@ -1,14 +1,14 @@
+import { HtmlUtils } from 'ts-common/html-utils';
 import { Rule } from '../shared/model/rule';
 import { Settings } from '../shared/model/settings';
-import { find, findFirst, removeChildren } from '../shared/utils/html-utils';
 import { RuleElementCreator } from './rule-element-creator';
 
 export class UserInterface {
 
-    private readonly urlField = findFirst<HTMLInputElement>('#urlField');
-    private readonly rulesAnchor = findFirst<HTMLDivElement>('#rulesanchor');
-    private readonly addRuleButton = findFirst<HTMLElement>('#addRuleBtn');
-    private readonly messager = findFirst<HTMLElement>('#messager');
+    private readonly urlField = HtmlUtils.findFirst<HTMLInputElement>('#urlField');
+    private readonly rulesAnchor = HtmlUtils.findFirst<HTMLDivElement>('#rulesanchor');
+    private readonly addRuleButton = HtmlUtils.findFirst<HTMLElement>('#addRuleBtn');
+    private readonly messager = HtmlUtils.findFirst<HTMLElement>('#messager');
     private onChangeListener: (() => void)[] = [];
     private onRuleDeleteHandler: ((id: string) => void)[] = [];
     private onRuleMoveUpHandler: ((id: string) => void)[] = [];
@@ -68,7 +68,7 @@ export class UserInterface {
     }
 
     private setRulesToUI(rules: Rule[]) {
-        removeChildren(this.rulesAnchor);
+        HtmlUtils.removeChildren(this.rulesAnchor);
         rules.forEach(rule => this.rulesAnchor.appendChild(
             this.ruleElementCreator.createRuleElement(
                 rule,
@@ -80,12 +80,12 @@ export class UserInterface {
 
     private getRulesFromUI(): Rule[] {
         const rules: Rule[] = [];
-        find('.ruleId').forEach(element => {
+        HtmlUtils.find('.ruleId').forEach(element => {
             const id = element.id;
-            const enabled = findFirst<HTMLInputElement>(`#${id}-enabled`).checked !== false;
-            const note = findFirst<HTMLInputElement>(`#${id}-note`).value;
-            const selector = findFirst<HTMLInputElement>(`#${id}-selector`).value;
-            const css = JSON.parse(findFirst<HTMLInputElement>(`#${id}-css`).value);
+            const enabled = HtmlUtils.findFirst<HTMLInputElement>(`#${id}-enabled`).checked !== false;
+            const note = HtmlUtils.findFirst<HTMLInputElement>(`#${id}-note`).value;
+            const selector = HtmlUtils.findFirst<HTMLInputElement>(`#${id}-selector`).value;
+            const css = JSON.parse(HtmlUtils.findFirst<HTMLInputElement>(`#${id}-css`).value);
             rules.push(new Rule(id, note, selector, css, enabled));
         });
         return rules;

@@ -1,6 +1,5 @@
+import { createClickableIcon, createInputWithLabel, createInputWithLinkLabel, createTextareaWithLabel } from '../shared/element-creator';
 import { Rule } from '../shared/model/rule';
-// tslint:disable-next-line:max-line-length
-import { createClickableIcon, createInputWithLabel, createInputWithLinkLabel, createTextareaWithLabel } from '../shared/utils/element-creator';
 
 const SIZZLEURL = 'https://github.com/jquery/sizzle/wiki#selectors';
 
@@ -46,7 +45,6 @@ export class RuleElementCreator {
         div.className = 'rulecontent';
         return div;
     }
-
 
     private createHiddenMarkerField(id: string): HTMLDivElement {
         const div = document.createElement('div');

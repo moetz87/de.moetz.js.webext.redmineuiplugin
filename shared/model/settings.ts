@@ -4,12 +4,14 @@ import { Rule } from './rule';
 export class Settings {
 
     constructor(
-        public url = 'http://localhost:80',
+        // tslint:disable-next-line:no-http-string
+        public url = 'http://redmine/redmine',
         public rules: Rule[] = DEFAULTRULES,
         public hiddenComments = false) {
 
     }
 
+    // tslint:disable-next-line:function-name
     public static fromJson(json: any): Settings {
         const settings = Object.assign(new Settings(), json);
         this.migrate_v101_v102(settings);
