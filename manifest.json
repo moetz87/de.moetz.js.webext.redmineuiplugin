@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Redmine UI Plugin",
-    "version": "1.0.3",
+    "version": "1.0.4",
     "description": "Eine Webextension zur Anpassung der Redmine-Oberfläche.",
     "author": "Marco Oetz",
     "applications": {
@@ -11,7 +11,11 @@
     },
     "content_scripts": [{
         "matches": ["<all_urls>"],
-        "js": ["ui-modifier/main.js"]
+        "js": [
+            "ui-modifier/rule-applier.js",
+            "ui-modifier/comments-toggler.js",
+            "ui-modifier/kp-calculator.js"
+        ]
     }],
     "icons": {
         "48": "icons/logo.png"

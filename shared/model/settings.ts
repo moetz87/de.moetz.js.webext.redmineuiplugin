@@ -5,7 +5,7 @@ export class Settings {
 
     constructor(
         // tslint:disable-next-line:no-http-string
-        public url = 'http://redmine/redmine',
+        public url = 'http://redmine/redmine/.*',
         public rules: Rule[] = DEFAULTRULES,
         public hiddenComments = false) {
 
