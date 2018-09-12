@@ -2,7 +2,8 @@ var settings = [
     { src: 'settings/main.ts', dst: 'settings/index.js', target: 'web' },
     { src: 'ui-modifier/rule-applier.ts', dst: 'ui-modifier/rule-applier.js', target: 'web' },
     { src: 'ui-modifier/comments-toggler.ts', dst: 'ui-modifier/comments-toggler.js', target: 'web' },
-    { src: 'ui-modifier/kp-calculator.ts', dst: 'ui-modifier/kp-calculator.js', target: 'web' }
+    { src: 'ui-modifier/kp-calculator.ts', dst: 'ui-modifier/kp-calculator.js', target: 'web' },
+    { src: 'ui-modifier/subticket-creator.ts', dst: 'ui-modifier/subticket-creator.js', target: 'web' }
 ];
 
 

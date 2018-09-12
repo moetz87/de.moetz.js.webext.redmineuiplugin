@@ -14,7 +14,8 @@
         "js": [
             "ui-modifier/rule-applier.js",
             "ui-modifier/comments-toggler.js",
-            "ui-modifier/kp-calculator.js"
+            "ui-modifier/kp-calculator.js",
+            "ui-modifier/subticket-creator.js"
         ]
     }],
     "icons": {
