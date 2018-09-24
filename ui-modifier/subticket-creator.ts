@@ -6,7 +6,7 @@ const URL_PATTERN_COPYVIEW = '.*(\\/issues\\/)(\\d+)(\\/copy).*';
 const URL_PATTERN_FEATUREVIEW = '.*(\\/issues\\/)(\\d+)$';
 const URL_PARAM_NEWSUBTICKET = 'newSubticket';
 const SELECTOR_DUPLICATE_BUTTON = 'a:contains("Duplizieren")';
-const SELECTOR_FEATURE_HEADER = 'h2:contains("Feature")';
+const SELECTOR_FEATURE_HEADER = 'h2:contains("Feature"), h2:contains("Kundenfeedback")';
 const PARENT_ID_REGEX = /^.*issues\/(\d+)\/copy$/g;
 
 export class SubticketCreator extends WebextMain {
