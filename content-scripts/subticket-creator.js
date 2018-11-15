@@ -94,7 +94,7 @@
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
-eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nconst html_utils_1 = __webpack_require__(/*! ts-common/html-utils */ \"./node_modules/ts-common/html-utils.js\");\nconst url_utils_1 = __webpack_require__(/*! ts-common/url-utils */ \"./node_modules/ts-common/url-utils.js\");\nconst webext_main_1 = __webpack_require__(/*! ts-common/webext-main */ \"./node_modules/ts-common/webext-main.js\");\nconst URL_PATTERN_COPYVIEW = '.*(\\\\/issues\\\\/)(\\\\d+)(\\\\/copy).*';\nconst URL_PATTERN_FEATUREVIEW = '.*(\\\\/issues\\\\/)(\\\\d+)$';\nconst URL_PARAM_NEWSUBTICKET = 'newSubticket';\nconst SELECTOR_DUPLICATE_BUTTON = 'a:contains(\"Duplizieren\")';\nconst SELECTOR_FEATURE_HEADER = 'h2:contains(\"Feature\"), h2:contains(\"Kundenfeedback\")';\nconst PARENT_ID_REGEX = /^.*issues\\/(\\d+)\\/copy$/g;\nclass SubticketCreator extends webext_main_1.WebextMain {\n    async onExecuteMain() {\n        if (this.currentPageShowsNewSubticket()) {\n            console.debug('Current Page shows new Subticket');\n            html_utils_1.HtmlUtils.findFirst('#issue_tracker_id').value = '5';\n            html_utils_1.HtmlUtils.findFirst('#issue_status_id').value = '1';\n            html_utils_1.HtmlUtils.findFirst('#issue_parent_issue_id').value = this.getParentId();\n            this.fireOnChangeEvent(html_utils_1.HtmlUtils.findFirst('#issue_tracker_id'));\n            return;\n        }\n        if (this.currentPageShowsFeature()) {\n            console.debug('Current Page shows Feature');\n            this.includeNewSubticketButton();\n            return;\n        }\n    }\n    currentPageShowsNewSubticket() {\n        const isCopyView = url_utils_1.UrlUtils.currentUrlMatchesRegex(URL_PATTERN_COPYVIEW);\n        const isNewSubticketView = new URL(window.location.href).searchParams.get(URL_PARAM_NEWSUBTICKET) != null;\n        const result = (isCopyView && isNewSubticketView);\n        console.debug(`currentPageShowsNewSubticket? ${result}`);\n        return result;\n    }\n    currentPageShowsFeature() {\n        const isDetailedView = url_utils_1.UrlUtils.currentUrlMatchesRegex(URL_PATTERN_FEATUREVIEW);\n        const showsFeature = html_utils_1.HtmlUtils.find(SELECTOR_FEATURE_HEADER).length !== 0;\n        const result = (isDetailedView && showsFeature);\n        console.debug(`currentPageShowsFeature? ${result}`);\n        return result;\n    }\n    includeNewSubticketButton() {\n        const duplicateElement = html_utils_1.HtmlUtils.findFirst(SELECTOR_DUPLICATE_BUTTON);\n        const subticketButton = document.createElement('a');\n        subticketButton.innerText = 'Neue Karte';\n        subticketButton.href = `${duplicateElement.getAttribute('href')}?${URL_PARAM_NEWSUBTICKET}`;\n        subticketButton.style.cursor = 'pointer';\n        subticketButton.className = 'icon icon-duplicate';\n        // tslint:disable-next-line:no-non-null-assertion\n        duplicateElement.parentElement.appendChild(subticketButton);\n    }\n    getParentId() {\n        const url = url_utils_1.UrlUtils.getCurrentUrl();\n        const matches = PARENT_ID_REGEX.exec(url);\n        const parentId = (matches != null) ? matches[1] : '';\n        console.debug(`Parent-ID: ${parentId}`);\n        return parentId;\n    }\n    fireOnChangeEvent(element) {\n        const event = document.createEvent('HTMLEvents');\n        event.initEvent('change', true, false);\n        element.dispatchEvent(event);\n        console.debug('Event fired');\n    }\n}\nexports.SubticketCreator = SubticketCreator;\nnew SubticketCreator().main();\n\n\n//# sourceURL=webpack:///./content-scripts/subticket-creator.ts?");
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nconst html_utils_1 = __webpack_require__(/*! ts-common/html-utils */ \"./node_modules/ts-common/html-utils.js\");\nconst settings_loader_1 = __webpack_require__(/*! ts-common/settings-loader */ \"./node_modules/ts-common/settings-loader.js\");\nconst url_utils_1 = __webpack_require__(/*! ts-common/url-utils */ \"./node_modules/ts-common/url-utils.js\");\nconst webext_main_1 = __webpack_require__(/*! ts-common/webext-main */ \"./node_modules/ts-common/webext-main.js\");\nconst settings_1 = __webpack_require__(/*! ../shared/entities/settings */ \"./shared/entities/settings.ts\");\nconst URL_PATTERN_COPYVIEW = '.*(\\\\/issues\\\\/)(\\\\d+)(\\\\/copy).*';\nconst URL_PATTERN_FEATUREVIEW = '.*(\\\\/issues\\\\/)(\\\\d+)$';\nconst URL_PARAM_NEWSUBTICKET = 'newSubticket';\nconst SELECTOR_DUPLICATE_BUTTON = 'a:contains(\"Kopieren\")';\nconst SELECTOR_FEATURE_HEADER = 'h2:contains(\"Feature\"), h2:contains(\"Kundenfeedback\")';\nconst PARENT_ID_REGEX = /^.*issues\\/(\\d+)\\/copy$/g;\nclass SubticketCreator extends webext_main_1.WebextMain {\n    async onExecuteMain() {\n        const settings = await settings_loader_1.SettingsLoader.load(settings_1.Settings);\n        if (!url_utils_1.UrlUtils.currentUrlMatchesRegex(`${settings.baseUrl}.*`)) {\n            return;\n        }\n        if (this.currentPageShowsNewSubticket()) {\n            html_utils_1.HtmlUtils.findFirst('#issue_tracker_id').value = '5';\n            html_utils_1.HtmlUtils.findFirst('#issue_status_id').value = '1';\n            html_utils_1.HtmlUtils.findFirst('#issue_parent_issue_id').value = this.getParentId();\n            this.fireOnChangeEvent(html_utils_1.HtmlUtils.findFirst('#issue_tracker_id'));\n            return;\n        }\n        if (this.currentPageShowsFeature()) {\n            this.includeNewSubticketButton();\n            return;\n        }\n    }\n    currentPageShowsNewSubticket() {\n        const isCopyView = url_utils_1.UrlUtils.currentUrlMatchesRegex(URL_PATTERN_COPYVIEW);\n        const isNewSubticketView = new URL(window.location.href).searchParams.get(URL_PARAM_NEWSUBTICKET) != null;\n        return (isCopyView && isNewSubticketView);\n    }\n    currentPageShowsFeature() {\n        const isDetailedView = url_utils_1.UrlUtils.currentUrlMatchesRegex(URL_PATTERN_FEATUREVIEW);\n        const showsFeature = html_utils_1.HtmlUtils.find(SELECTOR_FEATURE_HEADER).length !== 0;\n        return (isDetailedView && showsFeature);\n    }\n    includeNewSubticketButton() {\n        const duplicateElement = html_utils_1.HtmlUtils.findFirst(SELECTOR_DUPLICATE_BUTTON);\n        const subticketButton = document.createElement('a');\n        subticketButton.innerText = 'Neue Karte';\n        subticketButton.href = `${duplicateElement.getAttribute('href')}?${URL_PARAM_NEWSUBTICKET}`;\n        subticketButton.style.cursor = 'pointer';\n        subticketButton.className = 'icon icon-duplicate';\n        // tslint:disable-next-line:no-non-null-assertion\n        duplicateElement.parentElement.appendChild(subticketButton);\n    }\n    getParentId() {\n        const url = url_utils_1.UrlUtils.getCurrentUrl();\n        const matches = PARENT_ID_REGEX.exec(url);\n        return (matches != null) ? matches[1] : '';\n    }\n    fireOnChangeEvent(element) {\n        const event = document.createEvent('HTMLEvents');\n        event.initEvent('change', true, false);\n        element.dispatchEvent(event);\n    }\n}\nexports.SubticketCreator = SubticketCreator;\nnew SubticketCreator().main();\n\n\n//# sourceURL=webpack:///./content-scripts/subticket-creator.ts?");
 
 /***/ }),
 
@@ -144,6 +144,18 @@ eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nconst 
 
 /***/ }),
 
+/***/ "./node_modules/ts-common/settings-loader.js":
+/*!***************************************************!*\
+  !*** ./node_modules/ts-common/settings-loader.js ***!
+  \***************************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar SettingsLoader;\n(function (SettingsLoader) {\n    // tslint:disable-next-line:no-reserved-keywords\n    async function load(type) {\n        const json = await browser.storage.local.get() || {};\n        let instance = new type();\n        instance = Object.assign(instance, json);\n        return Promise.resolve(instance);\n    }\n    SettingsLoader.load = load;\n    async function save(settings) {\n        return browser.storage.local.set(settings);\n    }\n    SettingsLoader.save = save;\n})(SettingsLoader = exports.SettingsLoader || (exports.SettingsLoader = {}));\n\n\n//# sourceURL=webpack:///./node_modules/ts-common/settings-loader.js?");
+
+/***/ }),
+
 /***/ "./node_modules/ts-common/sizzle-dynamic.js":
 /*!**************************************************!*\
   !*** ./node_modules/ts-common/sizzle-dynamic.js ***!
@@ -177,6 +189,74 @@ eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nvar Ur
 
 "use strict";
 eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nconst domready_dynamic_1 = __webpack_require__(/*! ./domready-dynamic */ \"./node_modules/ts-common/domready-dynamic.js\");\nclass WebextMain {\n    main() {\n        domready_dynamic_1.Domready.onReady(() => this.onExecuteMain());\n    }\n}\nexports.WebextMain = WebextMain;\n\n\n//# sourceURL=webpack:///./node_modules/ts-common/webext-main.js?");
+
+/***/ }),
+
+/***/ "./node_modules/uuid/lib/bytesToUuid.js":
+/*!**********************************************!*\
+  !*** ./node_modules/uuid/lib/bytesToUuid.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("/**\n * Convert array of 16 byte values to UUID string format of the form:\n * XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX\n */\nvar byteToHex = [];\nfor (var i = 0; i < 256; ++i) {\n  byteToHex[i] = (i + 0x100).toString(16).substr(1);\n}\n\nfunction bytesToUuid(buf, offset) {\n  var i = offset || 0;\n  var bth = byteToHex;\n  return bth[buf[i++]] + bth[buf[i++]] +\n          bth[buf[i++]] + bth[buf[i++]] + '-' +\n          bth[buf[i++]] + bth[buf[i++]] + '-' +\n          bth[buf[i++]] + bth[buf[i++]] + '-' +\n          bth[buf[i++]] + bth[buf[i++]] + '-' +\n          bth[buf[i++]] + bth[buf[i++]] +\n          bth[buf[i++]] + bth[buf[i++]] +\n          bth[buf[i++]] + bth[buf[i++]];\n}\n\nmodule.exports = bytesToUuid;\n\n\n//# sourceURL=webpack:///./node_modules/uuid/lib/bytesToUuid.js?");
+
+/***/ }),
+
+/***/ "./node_modules/uuid/lib/rng-browser.js":
+/*!**********************************************!*\
+  !*** ./node_modules/uuid/lib/rng-browser.js ***!
+  \**********************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("/* WEBPACK VAR INJECTION */(function(global) {// Unique ID creation requires a high quality random # generator.  In the\n// browser this is a little complicated due to unknown quality of Math.random()\n// and inconsistent support for the `crypto` API.  We do the best we can via\n// feature-detection\nvar rng;\n\nvar crypto = global.crypto || global.msCrypto; // for IE 11\nif (crypto && crypto.getRandomValues) {\n  // WHATWG crypto RNG - http://wiki.whatwg.org/wiki/Crypto\n  var rnds8 = new Uint8Array(16); // eslint-disable-line no-undef\n  rng = function whatwgRNG() {\n    crypto.getRandomValues(rnds8);\n    return rnds8;\n  };\n}\n\nif (!rng) {\n  // Math.random()-based (RNG)\n  //\n  // If all else fails, use Math.random().  It's fast, but is of unspecified\n  // quality.\n  var rnds = new Array(16);\n  rng = function() {\n    for (var i = 0, r; i < 16; i++) {\n      if ((i & 0x03) === 0) r = Math.random() * 0x100000000;\n      rnds[i] = r >>> ((i & 0x03) << 3) & 0xff;\n    }\n\n    return rnds;\n  };\n}\n\nmodule.exports = rng;\n\n/* WEBPACK VAR INJECTION */}.call(this, __webpack_require__(/*! ./../../webpack/buildin/global.js */ \"./node_modules/webpack/buildin/global.js\")))\n\n//# sourceURL=webpack:///./node_modules/uuid/lib/rng-browser.js?");
+
+/***/ }),
+
+/***/ "./node_modules/uuid/v4.js":
+/*!*********************************!*\
+  !*** ./node_modules/uuid/v4.js ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+eval("var rng = __webpack_require__(/*! ./lib/rng */ \"./node_modules/uuid/lib/rng-browser.js\");\nvar bytesToUuid = __webpack_require__(/*! ./lib/bytesToUuid */ \"./node_modules/uuid/lib/bytesToUuid.js\");\n\nfunction v4(options, buf, offset) {\n  var i = buf && offset || 0;\n\n  if (typeof(options) == 'string') {\n    buf = options == 'binary' ? new Array(16) : null;\n    options = null;\n  }\n  options = options || {};\n\n  var rnds = options.random || (options.rng || rng)();\n\n  // Per 4.4, set bits for version and `clock_seq_hi_and_reserved`\n  rnds[6] = (rnds[6] & 0x0f) | 0x40;\n  rnds[8] = (rnds[8] & 0x3f) | 0x80;\n\n  // Copy bytes to buffer, if provided\n  if (buf) {\n    for (var ii = 0; ii < 16; ++ii) {\n      buf[i + ii] = rnds[ii];\n    }\n  }\n\n  return buf || bytesToUuid(rnds);\n}\n\nmodule.exports = v4;\n\n\n//# sourceURL=webpack:///./node_modules/uuid/v4.js?");
+
+/***/ }),
+
+/***/ "./node_modules/webpack/buildin/global.js":
+/*!***********************************!*\
+  !*** (webpack)/buildin/global.js ***!
+  \***********************************/
+/*! no static exports found */
+/***/ (function(module, exports) {
+
+eval("var g;\n\n// This works in non-strict mode\ng = (function() {\n\treturn this;\n})();\n\ntry {\n\t// This works if eval is allowed (see CSP)\n\tg = g || Function(\"return this\")() || (1, eval)(\"this\");\n} catch (e) {\n\t// This works if the window reference is available\n\tif (typeof window === \"object\") g = window;\n}\n\n// g can still be undefined, but nothing to do about it...\n// We return undefined, instead of nothing here, so it's\n// easier to handle this case. if(!global) { ...}\n\nmodule.exports = g;\n\n\n//# sourceURL=webpack:///(webpack)/buildin/global.js?");
+
+/***/ }),
+
+/***/ "./shared/entities/rule.ts":
+/*!*********************************!*\
+  !*** ./shared/entities/rule.ts ***!
+  \*********************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nconst UUIDv4 = __webpack_require__(/*! uuid/v4 */ \"./node_modules/uuid/v4.js\");\nclass Rule {\n    constructor(id, note, selector, css, enabled = true) {\n        this.id = id;\n        this.note = note;\n        this.selector = selector;\n        this.css = css;\n        this.enabled = enabled;\n    }\n    static empty() {\n        return new Rule(UUIDv4(), '', '', {}, true);\n    }\n}\nexports.Rule = Rule;\n\n\n//# sourceURL=webpack:///./shared/entities/rule.ts?");
+
+/***/ }),
+
+/***/ "./shared/entities/settings.ts":
+/*!*************************************!*\
+  !*** ./shared/entities/settings.ts ***!
+  \*************************************/
+/*! no static exports found */
+/***/ (function(module, exports, __webpack_require__) {
+
+"use strict";
+eval("\nObject.defineProperty(exports, \"__esModule\", { value: true });\nconst UUIDv4 = __webpack_require__(/*! uuid/v4 */ \"./node_modules/uuid/v4.js\");\nconst rule_1 = __webpack_require__(/*! ./rule */ \"./shared/entities/rule.ts\");\nclass Settings {\n    constructor(\n    // tslint:disable-next-line:no-http-string\n    url = 'deprecated', baseUrl = 'https://redmine.n-design.de', rules = DEFAULTRULES, hiddenComments = false) {\n        this.url = url;\n        this.baseUrl = baseUrl;\n        this.rules = rules;\n        this.hiddenComments = hiddenComments;\n    }\n    // tslint:disable-next-line:function-name\n    static fromJson(json) {\n        const settings = Object.assign(new Settings(), json);\n        this.migrate_v101_v102(settings);\n        return settings;\n    }\n    static migrate_v101_v102(settings) {\n        settings.rules\n            .filter(rule => rule.enabled == null)\n            .forEach(rule => rule.enabled = true);\n    }\n}\nexports.Settings = Settings;\nconst DEFAULTRULES = [\n    new rule_1.Rule(UUIDv4(), 'Grüne Färbung für Tickets mit Status \"In Bearbeitung\"', 'td.status:contains(\"In Bearbeitung\")', { color: '#278753' }, true),\n    new rule_1.Rule(UUIDv4(), 'Rote Färbung und Fettdruck für Tickets mit Status \"Gelöst\"', 'td.status:contains(\"Gelöst\")', { 'font-weight': 'bold', color: '#f44242' }, true),\n    new rule_1.Rule(UUIDv4(), 'Ausgrauen von Tickets mit Status \"Erledigt\"', 'tr:has(td.status:contains(\"Erledigt\"))', { opacity: '0.5' }, true),\n    new rule_1.Rule(UUIDv4(), 'Hervorheben des Tickets, das ich in Bearbeitung habe', 'tr:has(td.status:contains(\"In Bearbeitung\")):has(td.assigned_to:contains(\"Marco Oetz\"))', { 'background-color': '#d3e0ed' }, true)\n];\n\n\n//# sourceURL=webpack:///./shared/entities/settings.ts?");
 
 /***/ })
 

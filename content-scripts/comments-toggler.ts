@@ -4,7 +4,7 @@ import { UrlUtils } from 'ts-common/url-utils';
 import { WebextMain } from 'ts-common/webext-main';
 import { Settings } from '../shared/entities/settings';
 
-const DETAILEDVIEWPATTERN = '\/issues\/[0-9]+';
+const DETAILEDVIEWPATTERN = '.*\/issues\/[0-9]+$';
 const HIDDENCOMMENTS_SELECTOR = 'div[id^="change-"]:not(".has-notes")';
 const HIDDENCOMMENTS_CSS = { display: 'none' };
 const UNHIDDENCOMMENTS_CSS = { display: 'inline' };
@@ -13,12 +13,9 @@ export class CommentsToggler extends WebextMain {
 
     public async onExecuteMain() {
         const settings = await SettingsLoader.load(Settings);
-        if (UrlUtils.urlEndsWith(DETAILEDVIEWPATTERN)) {
-            console.log(`URL ${UrlUtils.getCurrentUrl()} ends with ${DETAILEDVIEWPATTERN}`);
+        if (UrlUtils.currentUrlMatchesRegex(`${settings.baseUrl}.*${DETAILEDVIEWPATTERN}`)) {
             this.showOrReplaceCommentsToggle(settings.hiddenComments);
             this.showOrHideComments(settings.hiddenComments);
-        } else {
-            console.debug(`URL ${UrlUtils.getCurrentUrl()} does not end with ${DETAILEDVIEWPATTERN}.`);
         }
     }
 
@@ -41,7 +38,6 @@ export class CommentsToggler extends WebextMain {
     }
 
     private async onCommentsToggle() {
-        console.log('toggle clicked');
         const settings = await SettingsLoader.load(Settings);
         settings.hiddenComments = !settings.hiddenComments;
         SettingsLoader.save(settings);

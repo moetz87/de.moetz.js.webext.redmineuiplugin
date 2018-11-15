@@ -5,7 +5,8 @@ export class Settings {
 
     constructor(
         // tslint:disable-next-line:no-http-string
-        public url = 'https://redmine.n-design.de',
+        public url = 'deprecated',
+        public baseUrl = 'https://redmine.n-design.de',
         public rules: Rule[] = DEFAULTRULES,
         public hiddenComments = false) {
 

@@ -12,16 +12,19 @@ export class KPCalculator extends WebextMain {
 
     public async onExecuteMain() {
         const settings = await SettingsLoader.load(Settings);
-        if (UrlUtils.currentUrlMatchesRegex(settings.url) && UrlUtils.currentUrlMatchesRegex(URL_PATTERN_OVERVIEW)) {
+        if (UrlUtils.currentUrlMatchesRegex(`${settings.baseUrl}.*${URL_PATTERN_OVERVIEW}`)) {
             const kpSum = this.calculateKPs(`.${CUSTOM_FIELD_KP}`);
-            this.showKPSum(kpSum);
-        } else {
-            console.debug(`URL ${UrlUtils.getCurrentUrl()} not matching pattern ${URL_PATTERN_OVERVIEW} or ${settings.url}.`);
+            if (kpSum) {
+                this.showKPSum(kpSum);
+            }
         }
     }
 
-    private calculateKPs(selector: string): number {
+    private calculateKPs(selector: string): number | undefined {
         const elements = HtmlUtils.find(selector);
+        if (elements.length === 0) {
+            return undefined;
+        }
         return elements.map(e => Number(e.textContent)).reduce((a, b) => a + b);
     }
 

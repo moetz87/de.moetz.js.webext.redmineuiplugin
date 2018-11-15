@@ -18,13 +18,17 @@ export class UserInterface {
     }
 
     public setSettings(settings: Settings) {
-        this.urlField.value = settings.url;
+        this.urlField.value = settings.baseUrl;
         this.setRules(settings.rules);
     }
 
     public async getSettings(): Promise<Settings> {
         const settings = await SettingsLoader.load(Settings);
-        settings.url = this.urlField.value;
+        settings.baseUrl = this.urlField.value;
+        if (settings.baseUrl.endsWith('/')) {
+            Messager.showMessage('Fehler', 'Die Redmine-Base-URL darf nicht mit einem "/" enden.');
+            throw Error('Fehlerhafte Redmine-Base-URL');
+        }
         settings.rules = this.getRules();
         return settings;
     }
@@ -76,10 +80,20 @@ export class UserInterface {
             const enabled = HtmlUtils.findFirst<HTMLInputElement>(`#${id}-enabled`).checked !== false;
             const note = HtmlUtils.findFirst<HTMLInputElement>(`#${id}-note`).value;
             const selector = HtmlUtils.findFirst<HTMLInputElement>(`#${id}-selector`).value;
-            const css = JSON.parse(HtmlUtils.findFirst<HTMLInputElement>(`#${id}-css`).value);
+            const css = this.getJson(note, `#${id}-css`);
             rules.push(new Rule(id, note, selector, css, enabled));
         });
         return rules;
+    }
+
+    private getJson(rulename: string, selector: string): any {
+        const value = HtmlUtils.findFirst<HTMLInputElement>(selector).value;
+        try {
+            return JSON.parse(value);
+        } catch (e) {
+            Messager.showMessage('Fehler', `Regel "${rulename}" enthält fehlerhaftes JSON:\n${e}`);
+            throw e;
+        }
     }
 
     private setRules(rules: Rule[]) {
