@@ -2,8 +2,8 @@ import { HtmlUtils } from 'ts-common/html-utils';
 import { SettingsLoader } from 'ts-common/settings-loader';
 import { UrlUtils } from 'ts-common/url-utils';
 import { WebextMain } from 'ts-common/webext-main';
-import { Rule } from '../shared/model/rule';
-import { Settings } from '../shared/model/settings';
+import { Rule } from '../shared/entities/rule';
+import { Settings } from '../shared/entities/settings';
 
 export class RuleApplier extends WebextMain {
 

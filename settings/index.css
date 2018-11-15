@@ -62,26 +62,20 @@ label {
     width: 100%;
 }
 
-
-
-/**************************/
-/* Messager */
-/**************************/
-
-#messager {
-    position: fixed;
-    display: none;
-    padding: 10px;
-    left: 50%;
-    transform: translateX(-50%);
+#savebutton {
+    font-size: 1.1em;
+    font-weight: normal;
     text-align: center;
-    background-color: rgb(146, 252, 160);
-    border: 1px solid rgb(90, 175, 100);
+    width: 125px;
+    height: 32px;
+    margin-top: 30px;
+    background-color: #f9f9fa;
+    border: 1px solid lightgray;
+    border-radius: 2px;
 }
 
-#messager.error {
-    background-color: rgba(252, 146, 146);
-    border: 1px solid rgb(192, 63, 95);
+#savebutton:hover {
+    background-color: #f0f0f0
 }
 
 

@@ -1,6 +1,8 @@
 import { HtmlUtils } from 'ts-common/html-utils';
-import { Rule } from '../shared/model/rule';
-import { Settings } from '../shared/model/settings';
+import { SettingsLoader } from 'ts-common/settings-loader';
+import { Rule } from '../shared/entities/rule';
+import { Settings } from '../shared/entities/settings';
+import { Messager } from '../shared/messager';
 import { RuleElementCreator } from './rule-element-creator';
 
 export class UserInterface {
@@ -8,80 +10,68 @@ export class UserInterface {
     private readonly urlField = HtmlUtils.findFirst<HTMLInputElement>('#urlField');
     private readonly rulesAnchor = HtmlUtils.findFirst<HTMLDivElement>('#rulesanchor');
     private readonly addRuleButton = HtmlUtils.findFirst<HTMLElement>('#addRuleBtn');
-    private readonly messager = HtmlUtils.findFirst<HTMLElement>('#messager');
-    private onChangeListener: (() => void)[] = [];
-    private onRuleDeleteHandler: ((id: string) => void)[] = [];
-    private onRuleMoveUpHandler: ((id: string) => void)[] = [];
-    private onRuleMoveDownHandler: ((id: string) => void)[] = [];
-    private onRuleAddHandler: (() => void)[] = [];
+    private readonly saveButton = HtmlUtils.findFirst<HTMLButtonElement>('#savebutton');
 
-    constructor(
-        private readonly ruleElementCreator: RuleElementCreator
-    ) {
-        this.urlField.onchange = this.rulesAnchor.onchange =
-            () => this.onChangeListener.forEach(callback => callback());
-        this.addRuleButton.onclick = () => this.onRuleAddHandler.forEach(callback => callback());
+    constructor(private readonly ruleElementCreator: RuleElementCreator) {
+        this.addRuleButton.onclick = () => this.addRule();
+        this.saveButton.onclick = () => this.save();
     }
 
-    public setSettings = (settings: Settings) => {
+    public setSettings(settings: Settings) {
         this.urlField.value = settings.url;
-        this.setRulesToUI(settings.rules);
+        this.setRules(settings.rules);
     }
 
-    public getSettings(): Settings {
-        return new Settings(
-            this.urlField.value,
-            this.getRulesFromUI()
-        );
+    public async getSettings(): Promise<Settings> {
+        const settings = await SettingsLoader.load(Settings);
+        settings.url = this.urlField.value;
+        settings.rules = this.getRules();
+        return settings;
     }
 
-    public registerOnChangeListener(callback: () => void) {
-        this.onChangeListener.push(callback);
+    public addRule() {
+        const rules = this.getRules();
+        rules.push(Rule.empty());
+        this.setRules(rules);
     }
 
-    public registerOnRuleDeleteHandler(callback: (id: string) => void) {
-        this.onRuleDeleteHandler.push(callback);
+    public deleteRule(id: string) {
+        const rules = this.getRules().filter(rule => rule.id !== id);
+        this.setRules(rules);
     }
 
-    public registerOnRuleMoveUpHandler(callback: (id: string) => void) {
-        this.onRuleMoveUpHandler.push(callback);
+    public moveRuleUp(id: string) {
+        const rules = this.getRules();
+        const index = rules.findIndex(rule => rule.id === id);
+        if (rules.length > 1 && index !== 0) {
+            const tmp = rules[index - 1];
+            rules[index - 1] = rules[index];
+            rules[index] = tmp;
+            this.setRules(rules);
+        }
     }
 
-    public registerOnRuleMoveDownHandler(callback: (id: string) => void) {
-        this.onRuleMoveDownHandler.push(callback);
+    public moveRuleDown(id: string) {
+        const rules = this.getRules();
+        const index = rules.findIndex(rule => rule.id === id);
+        if (rules.length > 1 && index !== rules.length - 1) {
+            const tmp = rules[index + 1];
+            rules[index + 1] = rules[index];
+            rules[index] = tmp;
+            this.setRules(rules);
+        }
     }
 
-    public registerOnRuleAddHandler(callback: () => void) {
-        this.onRuleAddHandler.push(callback);
+    public save() {
+        SettingsLoader.save(this.getSettings())
+            .then(() => Messager.showMessage('Erfolg', 'Einstellungen gespeichert.'))
+            .catch(() => Messager.showMessage('Fehler', 'Fehler beim Speichern der Einstellungen.'));
     }
 
-    public showMessage(message: string) {
-        this.messager.innerText = message;
-        this.messager.className = '';
-        this.messager.style.display = 'block';
-        setTimeout(() => this.messager.style.display = 'none', 2500);
-    }
-
-    public showErrorMessage(message: string) {
-        this.showMessage(message);
-        this.messager.className = 'error';
-    }
-
-    private setRulesToUI(rules: Rule[]) {
-        HtmlUtils.removeChildren(this.rulesAnchor);
-        rules.forEach(rule => this.rulesAnchor.appendChild(
-            this.ruleElementCreator.createRuleElement(
-                rule,
-                () => this.onRuleMoveUpHandler.forEach(callback => callback(rule.id)),
-                () => this.onRuleMoveDownHandler.forEach(callback => callback(rule.id)),
-                () => this.onRuleDeleteHandler.forEach(callback => callback(rule.id)))
-        ));
-    }
-
-    private getRulesFromUI(): Rule[] {
+    private getRules(): Rule[] {
         const rules: Rule[] = [];
-        HtmlUtils.find('.ruleId').forEach(element => {
-            const id = element.id;
+        HtmlUtils.find('div[rule]').forEach(element => {
+            const id = element.getAttribute('rule');
             const enabled = HtmlUtils.findFirst<HTMLInputElement>(`#${id}-enabled`).checked !== false;
             const note = HtmlUtils.findFirst<HTMLInputElement>(`#${id}-note`).value;
             const selector = HtmlUtils.findFirst<HTMLInputElement>(`#${id}-selector`).value;
@@ -89,6 +79,19 @@ export class UserInterface {
             rules.push(new Rule(id, note, selector, css, enabled));
         });
         return rules;
+    }
+
+    private setRules(rules: Rule[]) {
+        HtmlUtils.removeChildren(this.rulesAnchor);
+        rules.forEach(rule => {
+            const ruleElement = this.ruleElementCreator.createRuleElement(
+                rule,
+                () => this.moveRuleUp(rule.id),
+                () => this.moveRuleDown(rule.id),
+                () => this.deleteRule(rule.id)
+            );
+            this.rulesAnchor.appendChild(ruleElement);
+        });
     }
 
 }

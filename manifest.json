@@ -12,12 +12,17 @@
     "content_scripts": [{
         "matches": ["<all_urls>"],
         "js": [
-            "ui-modifier/rule-applier.js",
-            "ui-modifier/comments-toggler.js",
-            "ui-modifier/kp-calculator.js",
-            "ui-modifier/subticket-creator.js"
+            "content-scripts/rule-applier.js",
+            "content-scripts/comments-toggler.js",
+            "content-scripts/kp-calculator.js",
+            "content-scripts/subticket-creator.js"
         ]
     }],
+    "background": {
+        "scripts": [
+            "background-scripts/messager.js"
+        ]
+    },
     "icons": {
         "48": "icons/logo.png"
     },

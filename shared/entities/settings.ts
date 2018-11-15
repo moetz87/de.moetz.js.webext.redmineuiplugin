@@ -5,7 +5,7 @@ export class Settings {
 
     constructor(
         // tslint:disable-next-line:no-http-string
-        public url = 'http://redmine/redmine/.*',
+        public url = 'https://redmine.n-design.de',
         public rules: Rule[] = DEFAULTRULES,
         public hiddenComments = false) {
 
@@ -31,19 +31,19 @@ const DEFAULTRULES = [
         UUIDv4(),
         'Grüne Färbung für Tickets mit Status "In Bearbeitung"',
         'td.status:contains("In Bearbeitung")',
-        { 'color': '#278753' },
+        { color: '#278753' },
         true),
     new Rule(
         UUIDv4(),
         'Rote Färbung und Fettdruck für Tickets mit Status "Gelöst"',
         'td.status:contains("Gelöst")',
-        { 'font-weight': 'bold', 'color': '#f44242' },
+        { 'font-weight': 'bold', color: '#f44242' },
         true),
     new Rule(
         UUIDv4(),
         'Ausgrauen von Tickets mit Status "Erledigt"',
         'tr:has(td.status:contains("Erledigt"))',
-        { 'opacity': '0.5' },
+        { opacity: '0.5' },
         true),
     new Rule(
         UUIDv4(),

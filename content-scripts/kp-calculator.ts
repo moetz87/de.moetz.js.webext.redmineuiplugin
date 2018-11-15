@@ -2,7 +2,7 @@ import { HtmlUtils } from 'ts-common/html-utils';
 import { SettingsLoader } from 'ts-common/settings-loader';
 import { UrlUtils } from 'ts-common/url-utils';
 import { WebextMain } from 'ts-common/webext-main';
-import { Settings } from '../shared/model/settings';
+import { Settings } from '../shared/entities/settings';
 
 const URL_PATTERN_OVERVIEW = '.*(\\/projects).*(\\/issues).*';
 const CUSTOM_FIELD_KP = 'cf_10';
