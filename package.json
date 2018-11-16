@@ -1,6 +1,6 @@
 {
     "name": "de.moetz.js.webext.redmineuiplugin",
-    "version": "1.0.6",
+    "version": "1.0.7",
     "scripts": {
         "build": "npm run webpack -- --mode production && npm run mkdir -- build/dist/ && npm run zip",
         "start": "concurrently \"npm run webpack -- --mode development --watch\" \"npm run webext\"",
@@ -9,7 +9,7 @@
         "zip": "bestzip build/dist/$npm_package_name-$npm_package_version.zip $npm_package_zipFiles",
         "mkdir": "mkdirp"
     },
-    "zipFiles": "manifest.json icons/ settings/ ui-modifier/",
+    "zipFiles": "manifest.json icons/ settings/ content-scripts/ background-scripts/",
     "dependencies": {
         "ts-common": "1.0.26",
         "uuid": "3.1.0"

@@ -24,9 +24,13 @@ export class CommentsToggler extends WebextMain {
         const toggle = document.createElement('a');
         toggle.id = 'comments-toggle';
         toggle.style.cursor = 'pointer';
-        toggle.innerText = (hidden === true) ? 'Kommentar ohne Inhalt anzeigen' : 'Kommentare ohne Inhalt ausblenden';
+        toggle.style.display = 'inline';
+        toggle.innerText = (hidden === true) ? 'Kommentare ohne Inhalt anzeigen' : 'Kommentare ohne Inhalt ausblenden';
         toggle.onclick = () => this.onCommentsToggle();
-        HtmlUtils.appendAfter(HtmlUtils.findFirst('#history h3'), toggle);
+
+        const header = HtmlUtils.findFirst<HTMLElement>('#history h3');
+        header.style.display = 'inline-block';
+        HtmlUtils.appendAfter(header, toggle);
     }
 
     private showOrHideComments(hidden: boolean) {

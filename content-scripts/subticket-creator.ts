@@ -19,16 +19,26 @@ export class SubticketCreator extends WebextMain {
             return;
         }
         if (this.currentPageShowsNewSubticket()) {
-            HtmlUtils.findFirst<HTMLSelectElement>('#issue_tracker_id').value = '5';
-            HtmlUtils.findFirst<HTMLSelectElement>('#issue_status_id').value = '1';
-            HtmlUtils.findFirst<HTMLInputElement>('#issue_parent_issue_id').value = this.getParentId();
-            this.fireOnChangeEvent(HtmlUtils.findFirst<HTMLSelectElement>('#issue_tracker_id'));
+            this.tryTo(() => HtmlUtils.findFirst<HTMLSelectElement>('#issue_tracker_id').value = '5');
+            this.tryTo(() => HtmlUtils.findFirst<HTMLSelectElement>('#issue_status_id').value = '1');
+            this.tryTo(() => HtmlUtils.findFirst<HTMLInputElement>('#issue_parent_issue_id').value = this.getParentId());
+            this.tryTo(() => HtmlUtils.findFirst<HTMLInputElement>('#link_copy').checked = false);
+            this.tryTo(() => HtmlUtils.findFirst<HTMLInputElement>('#copy_attachments').checked = false);
+            this.tryTo(() => HtmlUtils.findFirst<HTMLInputElement>('#copy_subtasks').checked = false);
+            this.tryTo(() => this.fireOnChangeEvent(HtmlUtils.findFirst<HTMLSelectElement>('#issue_tracker_id')));
             return;
         }
         if (this.currentPageShowsFeature()) {
             this.includeNewSubticketButton();
             return;
         }
+    }
+
+    private tryTo(execution: () => void) {
+        try {
+            execution();
+        // tslint:disable-next-line:no-empty
+        } catch (e) { }
     }
 
     private currentPageShowsNewSubticket(): boolean {
