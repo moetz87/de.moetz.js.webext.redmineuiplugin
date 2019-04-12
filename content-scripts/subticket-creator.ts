@@ -1,8 +1,8 @@
-import { HtmlUtils } from 'ts-common/html-utils';
-import { SettingsLoader } from 'ts-common/settings-loader';
-import { UrlUtils } from 'ts-common/url-utils';
-import { WebextMain } from 'ts-common/webext-main';
 import { Settings } from '../shared/entities/settings';
+import { Domready } from '../shared/utils/domready-dynamic';
+import { HtmlUtils } from '../shared/utils/html-utils';
+import { SettingsLoader } from '../shared/utils/settings-loader';
+import { UrlUtils } from '../shared/utils/url-utils';
 
 const URL_PATTERN_COPYVIEW = '.*(\\/issues\\/)(\\d+)(\\/copy).*';
 const URL_PATTERN_FEATUREVIEW = '.*(\\/issues\\/)(\\d+)$';
@@ -11,9 +11,9 @@ const SELECTOR_DUPLICATE_BUTTON = 'a:contains("Kopieren")';
 const SELECTOR_FEATURE_HEADER = 'h2:contains("Feature"), h2:contains("Kundenfeedback")';
 const PARENT_ID_REGEX = /^.*issues\/(\d+)\/copy$/g;
 
-export class SubticketCreator extends WebextMain {
+export class SubticketCreator {
 
-    public async onExecuteMain() {
+    public async main() {
         const settings = await SettingsLoader.load(Settings);
         if (!UrlUtils.currentUrlMatchesRegex(`${settings.baseUrl}.*`)) {
             return;
@@ -37,7 +37,7 @@ export class SubticketCreator extends WebextMain {
     private tryTo(execution: () => void) {
         try {
             execution();
-        // tslint:disable-next-line:no-empty
+            // tslint:disable-next-line:no-empty
         } catch (e) { }
     }
 
@@ -78,4 +78,4 @@ export class SubticketCreator extends WebextMain {
 
 }
 
-new SubticketCreator().main();
+Domready.onReady(async () => new SubticketCreator().main());

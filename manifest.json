@@ -1,7 +1,7 @@
 {
     "manifest_version": 2,
     "name": "Redmine UI Plugin",
-    "version": "1.0.7",
+    "version": "1.0.8",
     "description": "Eine Webextension zur Anpassung der Redmine-Oberfläche.",
     "author": "Marco Oetz",
     "applications": {

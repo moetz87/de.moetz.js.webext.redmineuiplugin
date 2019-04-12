@@ -1,16 +1,16 @@
-import { HtmlUtils } from 'ts-common/html-utils';
-import { SettingsLoader } from 'ts-common/settings-loader';
-import { UrlUtils } from 'ts-common/url-utils';
-import { WebextMain } from 'ts-common/webext-main';
 import { Settings } from '../shared/entities/settings';
+import { Domready } from '../shared/utils/domready-dynamic';
+import { HtmlUtils } from '../shared/utils/html-utils';
+import { SettingsLoader } from '../shared/utils/settings-loader';
+import { UrlUtils } from '../shared/utils/url-utils';
 
 const URL_PATTERN_OVERVIEW = '.*(\\/projects).*(\\/issues).*';
 const CUSTOM_FIELD_KP = 'cf_10';
 const KP_HEADER_SELECTOR = 'a:contains("Komplexitätspunkte")';
 
-export class KPCalculator extends WebextMain {
+export class KPCalculator {
 
-    public async onExecuteMain() {
+    public async main() {
         const settings = await SettingsLoader.load(Settings);
         if (UrlUtils.currentUrlMatchesRegex(`${settings.baseUrl}.*${URL_PATTERN_OVERVIEW}`)) {
             const kpSum = this.calculateKPs(`.${CUSTOM_FIELD_KP}`);
@@ -36,4 +36,4 @@ export class KPCalculator extends WebextMain {
 
 }
 
-new KPCalculator().main();
+Domready.onReady(async () => new KPCalculator().main());

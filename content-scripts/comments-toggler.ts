@@ -1,17 +1,17 @@
-import { HtmlUtils } from 'ts-common/html-utils';
-import { SettingsLoader } from 'ts-common/settings-loader';
-import { UrlUtils } from 'ts-common/url-utils';
-import { WebextMain } from 'ts-common/webext-main';
 import { Settings } from '../shared/entities/settings';
+import { Domready } from '../shared/utils/domready-dynamic';
+import { HtmlUtils } from '../shared/utils/html-utils';
+import { SettingsLoader } from '../shared/utils/settings-loader';
+import { UrlUtils } from '../shared/utils/url-utils';
 
 const DETAILEDVIEWPATTERN = '.*\/issues\/[0-9]+$';
 const HIDDENCOMMENTS_SELECTOR = 'div[id^="change-"]:not(".has-notes")';
 const HIDDENCOMMENTS_CSS = { display: 'none' };
 const UNHIDDENCOMMENTS_CSS = { display: 'inline' };
 
-export class CommentsToggler extends WebextMain {
+export class CommentsToggler {
 
-    public async onExecuteMain() {
+    public async main() {
         const settings = await SettingsLoader.load(Settings);
         if (UrlUtils.currentUrlMatchesRegex(`${settings.baseUrl}.*${DETAILEDVIEWPATTERN}`)) {
             this.showOrReplaceCommentsToggle(settings.hiddenComments);
@@ -44,11 +44,11 @@ export class CommentsToggler extends WebextMain {
     private async onCommentsToggle() {
         const settings = await SettingsLoader.load(Settings);
         settings.hiddenComments = !settings.hiddenComments;
-        SettingsLoader.save(settings);
+        await SettingsLoader.save(settings);
         this.showOrReplaceCommentsToggle(settings.hiddenComments);
         this.showOrHideComments(settings.hiddenComments);
     }
 
 }
 
-new CommentsToggler().main();
+Domready.onReady(async () => new CommentsToggler().main());
