@@ -27,7 +27,7 @@ export function createInputWithLabel(id: string, inputType: string, text: string
 
 // tslint:disable-next-line:max-line-length
 export function createInputWithLinkLabel(id: string, inputType: string, text: string, linkAddr: string, value: string | boolean): HTMLDivElement {
-    const icon = createClickableIcon('fas fa-external-link-alt', () => window.open(linkAddr));
+    const icon = createClickableIcon('../icons/external_link.png', () => window.open(linkAddr));
     const label = createLabelElement(id, text);
     label.appendChild(icon);
     const div = document.createElement('div');
@@ -50,12 +50,12 @@ export function createTextareaWithLabel(id: string, text: string, value: string)
     return div;
 }
 
-export function createClickableIcon(iconClass: string, onClick: () => void): HTMLAnchorElement {
-    const i = document.createElement('i');
-    i.className = iconClass;
+export function createClickableIcon(srcUrl: string, onClick: () => void): HTMLAnchorElement {
+    const img = document.createElement('img');
+    img.src = srcUrl;
     const a = document.createElement('a');
     a.onclick = onClick;
     a.style.cursor = 'pointer';
-    a.appendChild(i);
+    a.appendChild(img);
     return a;
 }

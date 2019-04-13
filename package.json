@@ -2,23 +2,20 @@
     "name": "de.moetz.js.webext.redmineuiplugin",
     "version": "1.0.8",
     "scripts": {
-        "build": "npm run webpack -- --mode production && npm run mkdir -- build/dist/ && npm run zip",
+        "build": "npm run clean && npm run webpack -- --mode production && npm run zip",
         "start": "concurrently \"npm run webpack -- --mode development --watch\" \"npm run webext\"",
         "webpack": "webpack --config webpack.config.js",
-        "webext": "web-ext run --firefox=firefox",
-        "zip": "bestzip build/dist/$npm_package_name-$npm_package_version.zip $npm_package_zipFiles",
-        "mkdir": "mkdirp"
+        "webext": "web-ext run --firefox=firefox --source-dir extension/",
+        "zip": "mkdir -p build/ && cd extension/ && zip -r ../build/$npm_package_name-$npm_package_version.zip *",
+        "clean": "rm -rf extension/**/*.js && rm -rf build/"
     },
-    "zipFiles": "manifest.json icons/ settings/ content-scripts/ background-scripts/",
     "dependencies": {
         "domready": "1.0.8",
         "sizzle": "2.3.4",
         "uuid": "3.1.0"
     },
     "devDependencies": {
-        "bestzip": "2.0.0",
         "concurrently": "4.0.1",
-        "mkdirp": "0.5.1",
         "tslint": "5.8.0",
         "tslint-microsoft-contrib": "5.0.1",
         "ts-loader": "4.5.0",

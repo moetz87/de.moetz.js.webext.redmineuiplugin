@@ -30,9 +30,9 @@ export class RuleElementCreator {
 
         const itemRight = document.createElement('div');
         itemRight.className = 'flex-item right';
-        itemRight.appendChild(createClickableIcon('fas fa-arrow-alt-circle-up', onUpClicked));
-        itemRight.appendChild(createClickableIcon('fas fa-arrow-alt-circle-down', onDownClicked));
-        itemRight.appendChild(createClickableIcon('fas fa-trash-alt red', onDeleteClicked));
+        itemRight.appendChild(createClickableIcon('../icons/arrow_up.png', onUpClicked));
+        itemRight.appendChild(createClickableIcon('../icons/arrow_down.png', onDownClicked));
+        itemRight.appendChild(createClickableIcon('../icons/trash.png', onDeleteClicked));
 
         const container = document.createElement('div');
         container.className = 'ruleheader flex-container';

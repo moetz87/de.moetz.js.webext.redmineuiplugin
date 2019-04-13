@@ -9,7 +9,7 @@ html {
 html,
 body {
     font-size: 12pt;
-    background-color: #F9F9FA;
+    background-color: white;
 }
 
 input {
@@ -143,4 +143,9 @@ label {
     color: green;
     font-size: 200%;
     float: right;
+}
+
+#rulesanchor img {
+    height: 18px;
+    margin-left: 6px;
 }

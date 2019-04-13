@@ -43,9 +43,9 @@ var path = require('path');
 
 function mapToConfigObject(setting) {
     var object = {
-        entry: `${__dirname}/${setting.src}`,
+        entry: `${__dirname}/src/${setting.src}`,
         output: {
-            path: `${__dirname}/${path.dirname(setting.dst)}`,
+            path: `${__dirname}/extension/${path.dirname(setting.dst)}`,
             filename: path.basename(setting.dst)
         },
         target: setting.target,
