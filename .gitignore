@@ -1,7 +1,4 @@
 .vscode/
 node_modules/
 build/
-
-settings/*.js
-shared/*.js
-ui-modifier/*.js
+dist/

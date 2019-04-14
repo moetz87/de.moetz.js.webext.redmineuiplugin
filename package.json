@@ -2,12 +2,14 @@
     "name": "de.moetz.js.webext.redmineuiplugin",
     "version": "1.0.8",
     "scripts": {
-        "build": "npm run clean && npm run webpack -- --mode production && npm run zip",
+        "clean": "rm -rf node_modules/ && rm -rf extension/**/*.js && rm -rf dist/",
+        "build": "npm run webpack -- --mode production",
+        "dist": "npm run zip && npm run zip-src",
         "start": "concurrently \"npm run webpack -- --mode development --watch\" \"npm run webext\"",
         "webpack": "webpack --config webpack.config.js",
         "webext": "web-ext run --firefox=firefox --source-dir extension/",
-        "zip": "mkdir -p build/ && cd extension/ && zip -r ../build/$npm_package_name-$npm_package_version.zip *",
-        "clean": "rm -rf extension/**/*.js && rm -rf build/"
+        "zip": "mkdir -p dist/ && cd extension/ && zip -r ../dist/$npm_package_name-$npm_package_version.zip *",
+        "zip-src": "mkdir -p dist/ && zip -r dist/$npm_package_name-$npm_package_version-src.zip * -x .gitignore .git/\\* node_modules/\\* dist/\\*"
     },
     "dependencies": {
         "domready": "1.0.8",
