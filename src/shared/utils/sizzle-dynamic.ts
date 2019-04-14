@@ -11,7 +11,6 @@ export module Sizzle {
 
     export function select(selector: string): Element[] {
         if (!importing()) {
-            console.log('not importing sizzle.');
             return [];
         }
         // tslint:disable-next-line:no-require-imports

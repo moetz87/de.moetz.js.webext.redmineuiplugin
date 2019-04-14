@@ -5,7 +5,6 @@ export module HtmlUtils {
     export function find<T extends Element>(selector: string): T[] {
         const elements = Sizzle.select(selector);
         if (elements.length === 0) {
-            console.log(`Kein Element mit Selector=${selector} gefunden.`);
             return [];
         }
         return <T[]>elements;
