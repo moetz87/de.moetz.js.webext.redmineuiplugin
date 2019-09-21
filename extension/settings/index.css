@@ -140,8 +140,7 @@ label {
 
 #rules #addRuleBtn {
     cursor: pointer;
-    color: green;
-    font-size: 200%;
+    height: 36px;
     float: right;
 }
 

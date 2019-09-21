@@ -69,7 +69,10 @@ export class UserInterface {
     public async save() {
         const settings = await this.getSettings();
         SettingsLoader.save(settings)
-            .then(() => Messager.showMessage('Erfolg', 'Einstellungen gespeichert.'))
+            .then(() => {
+                Messager.showMessage('Erfolg', 'Einstellungen gespeichert.');
+                this.setRules(settings.rules);
+            })
             .catch((error) => Messager.showMessage('Fehler', `Fehler beim Speichern der Einstellungen.\n${error}`));
     }
 
