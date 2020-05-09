@@ -1,4 +1,4 @@
-import * as UUIDv4 from 'uuid/v4';
+import { v4 as UUIDv4 } from 'uuid';
 import { Rule } from './rule';
 
 export class Settings {
