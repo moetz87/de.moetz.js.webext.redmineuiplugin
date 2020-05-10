@@ -7,7 +7,6 @@ import { RuleElementCreator } from './rule-element-creator';
 
 export class UserInterface {
 
-    private readonly urlField = HtmlUtils.findFirst<HTMLInputElement>('#urlField');
     private readonly rulesAnchor = HtmlUtils.findFirst<HTMLDivElement>('#rulesanchor');
     private readonly addRuleButton = HtmlUtils.findFirst<HTMLElement>('#addRuleBtn');
     private readonly saveButton = HtmlUtils.findFirst<HTMLButtonElement>('#savebutton');
@@ -18,17 +17,11 @@ export class UserInterface {
     }
 
     public setSettings(settings: Settings) {
-        this.urlField.value = settings.baseUrl;
         this.setRules(settings.rules);
     }
 
     public async getSettings(): Promise<Settings> {
         const settings = await SettingsLoader.load(Settings);
-        settings.baseUrl = this.urlField.value;
-        if (settings.baseUrl.endsWith('/')) {
-            Messager.showMessage('Fehler', 'Die Redmine-Base-URL darf nicht mit einem "/" enden.');
-            throw Error('Fehlerhafte Redmine-Base-URL');
-        }
         settings.rules = this.getRules();
         return settings;
     }

@@ -14,19 +14,29 @@
             "update_url": "https://webextensions.marcooetz.de/updates.json"
         }
     },
-    "content_scripts": [{
-        "matches": ["<all_urls>"],
-        "js": [
-            "content-scripts/rule-applier.js",
-            "content-scripts/comments-toggler.js",
-            "content-scripts/kp-calculator.js",
-            "content-scripts/subticket-creator.js"
-        ]
-    }],
+    "content_scripts": [
+        {
+            "matches": [ "https://redmine.n-design.de/*" ],
+            "js": [ "content-scripts/rule-applier.js" ]
+        },
+        {
+            "matches": [ "https://redmine.n-design.de/issues/*" ],
+            "js": [
+                "content-scripts/comments-toggler.js",
+                "content-scripts/subticket-button-appender.js"
+            ]
+        },
+        {
+            "matches": [ "https://redmine.n-design.de/projects/*/issues" ],
+            "js": [ "content-scripts/kp-calculator.js" ]
+        },
+        {
+            "matches": [ "https://redmine.n-design.de/projects/*/issues/*/copy?newSubticket" ],
+            "js": [ "content-scripts/subticket-modifier.js" ]
+        }
+    ],
     "background": {
-        "scripts": [
-            "background-scripts/messager.js"
-        ]
+        "scripts": [ "background-scripts/messager.js" ]
     },
     "icons": {
         "48": "icons/logo.png"
@@ -34,6 +44,6 @@
     "options_ui": {
         "page": "settings/index.html"
     },
-    "permissions": ["storage", "tabs", "activeTab", "notifications"],
+    "permissions": [ "storage", "activeTab", "notifications" ],
     "content_security_policy": "script-src 'self' 'unsafe-eval'; object-src 'self'"
 }
