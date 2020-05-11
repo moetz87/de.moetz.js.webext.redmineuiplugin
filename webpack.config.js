@@ -5,6 +5,11 @@ var settings = [
     { src: 'content-scripts/kp-calculator.ts', dst: 'content-scripts/kp-calculator.js', target: 'web' },
     { src: 'content-scripts/subticket-modifier.ts', dst: 'content-scripts/subticket-modifier.js', target: 'web' },
     {
+        src: 'content-scripts/activities-sheet-generator.ts',
+        dst: 'content-scripts/activities-sheet-generator.js',
+        target: 'web'
+    },
+    {
         src: 'content-scripts/subticket-button-appender.ts',
         dst: 'content-scripts/subticket-button-appender.js',
         target: 'web'

@@ -2,7 +2,7 @@ import { Domready } from '../shared/utils/domready-dynamic';
 import { HtmlUtils } from '../shared/utils/html-utils';
 import { UrlUtils } from '../shared/utils/url-utils';
 
-const PARENT_ID_REGEX = /^.*issues\/(\d+)\/copy$/g;
+const PARENT_ID_REGEX = /^.*issues\/(\d+)\/copy$/;
 
 export class SubticketModifier {
 
@@ -31,7 +31,7 @@ export class SubticketModifier {
 
     private getParentId(): string {
         const url = UrlUtils.getCurrentUrl();
-        const matches = PARENT_ID_REGEX.exec(url);
+        const matches = url.match(PARENT_ID_REGEX);
         return (matches != null) ? matches[1] : '';
     }
 

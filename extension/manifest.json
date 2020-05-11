@@ -27,12 +27,22 @@
             ]
         },
         {
-            "matches": [ "https://redmine.n-design.de/projects/*/issues" ],
+            "matches": [
+                "https://redmine.n-design.de/projects/*/issues",
+                "https://redmine.n-design.de/projects/*/issues?*"
+            ],
             "js": [ "content-scripts/kp-calculator.js" ]
         },
         {
             "matches": [ "https://redmine.n-design.de/projects/*/issues/*/copy?newSubticket" ],
             "js": [ "content-scripts/subticket-modifier.js" ]
+        },
+        {
+            "matches": [
+                "https://redmine.n-design.de/activity",
+                "https://redmine.n-design.de/activity?*"
+            ],
+            "js": [ "content-scripts/activities-sheet-generator.js" ]
         }
     ],
     "background": {
