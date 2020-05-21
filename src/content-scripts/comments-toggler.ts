@@ -2,9 +2,7 @@ import { Settings } from '../shared/entities/settings';
 import { Domready } from '../shared/utils/domready-dynamic';
 import { HtmlUtils } from '../shared/utils/html-utils';
 import { SettingsLoader } from '../shared/utils/settings-loader';
-import { UrlUtils } from '../shared/utils/url-utils';
 
-const DETAILEDVIEWPATTERN = '.*\/issues\/[0-9]+$';
 const HIDDENCOMMENTS_SELECTOR = 'div[id^="change-"]:not(".has-notes")';
 const HIDDENCOMMENTS_CSS = { display: 'none' };
 const UNHIDDENCOMMENTS_CSS = { display: 'inline' };
@@ -13,10 +11,8 @@ export class CommentsToggler {
 
     public async main() {
         const settings = await SettingsLoader.load(Settings);
-        if (UrlUtils.currentUrlMatchesRegex(`${settings.baseUrl}.*${DETAILEDVIEWPATTERN}`)) {
-            this.showOrReplaceCommentsToggle(settings.hiddenComments);
-            this.showOrHideComments(settings.hiddenComments);
-        }
+        this.showOrReplaceCommentsToggle(settings.hiddenComments);
+        this.showOrHideComments(settings.hiddenComments);
     }
 
     private showOrReplaceCommentsToggle(hidden: boolean) {

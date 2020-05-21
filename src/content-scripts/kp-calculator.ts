@@ -1,10 +1,6 @@
-import { Settings } from '../shared/entities/settings';
 import { Domready } from '../shared/utils/domready-dynamic';
 import { HtmlUtils } from '../shared/utils/html-utils';
-import { SettingsLoader } from '../shared/utils/settings-loader';
-import { UrlUtils } from '../shared/utils/url-utils';
 
-const URL_PATTERN_OVERVIEW = '.*(\\/projects).*(\\/issues).*';
 const CUSTOM_FIELD_KP = 'cf_10';
 const KP_HEADER_SELECTOR = 'a:contains("Komplexitätspunkte")';
 const KP_SELECTED = `tr.context-menu-selection > td.${CUSTOM_FIELD_KP}`;
@@ -15,14 +11,11 @@ const ICON_SELECTED = 'data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAAAoAAAAKCAY
 export class KPCalculator {
 
     public async main() {
-        const settings = await SettingsLoader.load(Settings);
-        if (UrlUtils.currentUrlMatchesRegex(`${settings.baseUrl}.*${URL_PATTERN_OVERVIEW}`)) {
-            const kpSum = this.calculateKPs();
-            if (kpSum) {
-                this.showKPSums(kpSum, 0);
-            }
-            this.setOnTableRowChanged();
+        const kpSum = this.calculateKPs();
+        if (kpSum) {
+            this.showKPSums(kpSum, 0);
         }
+        this.setOnTableRowChanged();
     }
 
     private calculateKPs(): number {
